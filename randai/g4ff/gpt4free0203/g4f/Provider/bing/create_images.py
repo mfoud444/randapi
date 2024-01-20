@@ -103,7 +103,7 @@ async def create_images(session: ClientSession, prompt: str, proxy: str = None, 
     async with session.post(url, allow_redirects=False, data=payload, timeout=timeout) as response:
         response.raise_for_status()
         text = (await response.text()).lower()
-        print(text)
+        # print(text)
         for error in ERRORS:
             if error in text:
                 raise RuntimeError(f"Create images failed: {error}")

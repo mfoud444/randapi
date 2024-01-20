@@ -7,7 +7,7 @@ from util.Settings import Settings
 from util.Helper import Helper
 from .ImageGen.SSD1 import SSD1
 from mysupabase import supabase
-
+from g4ff import g4ff0202, g4ff0203, ImageTextGenerator
 class ImageGenerator:
     def __init__(self, req):
         self.req = req
@@ -25,11 +25,24 @@ class ImageGenerator:
             print(f"Error: {e}")
 
         return {"image_paths": images_list}
+    
+    
+    def gen_image(self, type = 'bing'):
+        image_functions = {
+            'bing': self.gen_image_bing,
+            'huggface_endpoint': self.gen_image_huggface_endpoint,
+            'huggface': self.gen_image_huggface,
+        }
+        if type in image_functions:
+            return image_functions[type]()
+        else:
+            # Handle the case where the type is not recognized
+            raise ValueError(f"Unsupported image type: {type}")
 
     def gen_image_bing(self):
         return self.generate_images([self.req['model'], self.req['model']], self.prompt_bing)
 
-    def gen_image(self):
+    def gen_image_huggface_endpoint(self):
         return self.generate_images([self.req['model']] * 4, self.prompt_model)
 
     def gen_image_huggface(self):
@@ -44,16 +57,33 @@ class ImageGenerator:
             print(f"Error processing model: {e}")
 
     def prompt_bing(self, model, prompt, images_list):
-        print('hhh', self.req['text_tran_user'])
         try:
-            # Uncomment the following lines when ImageTextGenerator is available
-            # image_text_generator = ImageTextGenerator(prompt)
-            # results = image_text_generator.generate_images_text()
-            # images_list.extend(results[0])
-            pass
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+
+            image_text_generator = ImageTextGenerator(prompt)
+            results = image_text_generator.generate_images_text()
+            print("results[0]", results[0])
+
+            for url in results[0]:
+                image_bytes = self.get_image_from_url(url)
+                if image_bytes:
+                    image_name = self.helper.generate_random_filename_image()
+                    image_path = os.path.join(script_dir, image_name)
+                    self.save_image(image_bytes, image_path)
+                    image_path = self.save_image_supabase(image_path, image_name)
+                    images_list.append(image_path)
         except Exception as e:
             print(f"Error lo: {e}")
 
+    def get_image_from_url(self, url):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.content
+        except requests.exceptions.RequestException as e:
+            print(f"Error getting image from URL: {e}")
+            return None
+        
     def process_model(self, model, prompt, images_list, prompt_func):
         prompt_func(model, prompt, images_list)
 

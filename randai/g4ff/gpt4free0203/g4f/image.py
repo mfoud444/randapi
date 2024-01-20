@@ -168,14 +168,20 @@ def format_images_markdown(images, prompt: str, preview: str="{image}?w=200&h=20
     Returns:
         str: The formatted markdown string.
     """
-    if isinstance(images, list):
-        images = [f"[![#{idx+1} {prompt}]({preview.replace('{image}', image)})]({image})" for idx, image in enumerate(images)]
-        images = "\n".join(images)
-    else:
-        images = f"[![{prompt}]({images})]({images})"
-    start_flag = "<!-- generated images start -->\n"
-    end_flag = "<!-- generated images end -->\n"
-    return f"\n{start_flag}{images}\n{end_flag}\n"
+    return images
+    # if isinstance(images, list):
+    #     images = [f"{image}" for idx, image in enumerate(images)]
+    # else:
+    #     images = f"[![{prompt}]({images})]({images})"
+    # return f"\n{start_flag}{images}\n{end_flag}\n"
+    # if isinstance(images, list):
+    #     images = [f"[![#{idx+1} {prompt}]({preview.replace('{image}', image)})]({image})" for idx, image in enumerate(images)]
+    #     images = "\n".join(images)
+    # else:
+    #     images = f"[![{prompt}]({images})]({images})"
+    # start_flag = "<!-- generated images start -->\n"
+    # end_flag = "<!-- generated images end -->\n"
+    # return f"\n{start_flag}{images}\n{end_flag}\n"
 
 def to_bytes(image: Image.Image) -> bytes:
     """
