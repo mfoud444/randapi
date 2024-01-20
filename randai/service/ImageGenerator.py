@@ -27,7 +27,7 @@ class ImageGenerator:
         return {"image_paths": images_list}
     
     
-    def gen_image(self, type = 'huggface'):
+    def gen_image(self, type = 'bing'):
         image_functions = {
             'bing': self.gen_image_bing,
             'huggface_endpoint': self.gen_image_huggface_endpoint,
@@ -53,7 +53,7 @@ class ImageGenerator:
         return self.generate_images([self.req['model']] * 4, self.prompt_model)
 
     def gen_image_huggface(self):
-        return self.generate_images([self.req['model'], self.req['model']], self.prompt_model_huggface)
+        return self.generate_images([self.req['model'], 'stable_diffusion_v1_5', 'aesthetic', 'stable_diffusion_v1_5'], self.prompt_model_huggface)
 
     def prompt_model(self, model, prompt, images_list):
         try:
