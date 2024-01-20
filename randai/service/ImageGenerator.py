@@ -27,7 +27,7 @@ class ImageGenerator:
         return {"image_paths": images_list}
     
     
-    def gen_image(self, type = 'bing'):
+    def gen_image(self, type = 'huggface'):
         image_functions = {
             'bing': self.gen_image_bing,
             'huggface_endpoint': self.gen_image_huggface_endpoint,
