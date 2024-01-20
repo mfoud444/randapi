@@ -40,13 +40,20 @@ class ImageGenerator:
             raise ValueError(f"Unsupported image type: {type}")
 
     def gen_image_bing(self):
-        return self.generate_images([self.req['model'], self.req['model']], self.prompt_bing)
+        try:
+            images_list = self.generate_images([self.req['model'], self.req['model']], self.prompt_bing)
+        except Exception as e:
+            print(f"Error with Bing, trying Huggface Endpoint: {e}")
+            images_list = self.generate_images([self.req['model']] * 4, self.prompt_model)
+
+        return images_list
+
 
     def gen_image_huggface_endpoint(self):
         return self.generate_images([self.req['model']] * 4, self.prompt_model)
 
     def gen_image_huggface(self):
-        return self.generate_images([self.req['model'], self.req['model']], self.prompt_model)
+        return self.generate_images([self.req['model'], self.req['model']], self.prompt_model_huggface)
 
     def prompt_model(self, model, prompt, images_list):
         try:
@@ -56,7 +63,14 @@ class ImageGenerator:
         except Exception as e:
             print(f"Error processing model: {e}")
             
-            
+    def prompt_model_huggface(self, model, prompt, images_list):
+        try:
+            image = self.make_request(prompt, model)
+            if image:
+                images_list.append(image)
+        except Exception as e:
+            print(f"Error processing model: {e}")
+              
     def prompt_bing(self, model, prompt, images_list):
         try:
             script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -75,7 +89,8 @@ class ImageGenerator:
                     if image_path:
                         images_list.append(image_path)
         except Exception as e:
-            print(f"Error lo: {e}")
+            print(f"Error Bing get image: {e}")
+            self.gen_image('huggface_endpoint')
 
     def process_image(self, url, script_dir):
         try:
@@ -128,6 +143,22 @@ class ImageGenerator:
         try:
             self.save_image(image_bytes, image_path)
             image_path = self.save_image_supabase(image_path, image_name)
+            return image_path
+        except Exception as e:
+            print(f"Error: {e}")
+            print(f"Image Bytes: {image_bytes[:20]}")
+            self.gen_image('huggface')
+            # return ''
+
+    def make_request(self, prompt: str, model: str) -> str:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        url = self.helper.get_url_model_api(model)
+        headers = self.helper.get_header_api()
+        image_name = self.helper.generate_random_filename_image()
+        image_path = os.path.join(script_dir, image_name)
+        image_bytes = self.query_model_api(prompt, model, url, headers)
+        try:
+            image_path = self.save_image(image_bytes, image_path)
             return image_path
         except Exception as e:
             print(f"Error: {e}")
