@@ -4,12 +4,14 @@ import random
 import uuid 
 import string
 from typing import List
-from g4f import ChatCompletion
+import g4f
 from util import TextTran, Settings
 from chat.database_utils import save_data_in_db
+from g4ff import g4ff0202, g4ff0203
 settings = Settings()
 class ChatText:
     def __init__(self, req):
+        self.g4f = g4f
         self.valid_request = req
         self.max_attempts = 5
         self.max_retries = 3
@@ -45,7 +47,7 @@ class ChatText:
         while retries < self.max_retries:
             try:
                 params = self.prepare_params()
-                response = ChatCompletion.create(**params)
+                response = self.g4f.ChatCompletion.create(**params)
                 if response is not None:
                     return response
                 else:
@@ -68,9 +70,11 @@ class ChatText:
         }
         if self.model == 'llama2-70b':
             params["provider"] = 'Llama2'
-        if self.is_web_search:
-            params["provider"] = 'Bing'
-            params["web_search"] = self.is_web_search
+        if self.model == 'gpt-4':
+            self.g4f = g4ff0202
+            if self.is_web_search:
+                params["provider"] = 'Bing'
+                params["web_search"] = self.is_web_search
         if self.image:
             params["image"] = self.image
             
@@ -81,13 +85,7 @@ class ChatText:
 
     def create_non_stream_response(self):
         response = self.generate_response()
-        return {
-            'id': f'chatcmpl-{self.completion_id}',
-            'created': self.completion_timestamp,
-            'model': self.model,
-            'text': response,
-            'parentMessageId': self.completion_id,
-        }
+        return {'text': response}
 
     def create_stream_response(self):
         attempts = 0
@@ -100,7 +98,7 @@ class ChatText:
         while attempts < self.max_attempts:
             try:
                 params = self.prepare_params()
-                response = ChatCompletion.create(**params)
+                response = self.g4f.ChatCompletion.create(**params)
                 if response is None:
                     raise ValueError("ChatCompletion.create returned None")
                 for chunk in response:
