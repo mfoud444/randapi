@@ -1,0 +1,7 @@
+.venv
+#randai/out
+randai/output.pdf
+*.png
+
+randai/service/gpt4free003
+

@@ -1,0 +1,80 @@
+if stream response how to save data in database
+
+class ChatTextAPIView(APIView):
+    def save_data_in_db(self, valid_request, data, response):
+        model_name = valid_request['model']
+        model_instance = get_object_or_404(ModelAI, code=model_name)
+        if valid_request['conv'] is None:
+            conversation_data = {
+                'user_id': valid_request['user_id'],
+                'model': model_instance,
+                'title': data['prompt'][:50],
+                'is_pin': False,
+                'is_favorite': False,
+                'is_like': None,
+                'created_at': timezone.now(),
+                'updated_at': timezone.now(),
+            }
+            conversation = Conversation.objects.create(**conversation_data)
+        else:
+            conversation = valid_request['conv']
+
+        message_ai_data = {
+            'text': response['text'],
+            'model': model_instance,
+            'is_like': None,
+            'created_at': timezone.now(),
+            'updated_at': timezone.now(),
+        }
+
+        message_ai = MessageAI.objects.create(**message_ai_data)
+        message_user_data = {
+            'conversation': conversation,
+            'text': data['prompt'],
+            'created_at': timezone.now(),
+            'updated_at': timezone.now(),
+        }
+
+        message_user = MessageUser.objects.create(**message_user_data)
+        message_user.message_ai.add(message_ai)
+
+        return {
+            "conversation": {"id":conversation.id,"title":conversation.title},
+            "messageUser": {"id":message_user.id},
+            "MessageAi": {"id":message_ai.id, "text":response["text"], "loading":False},
+        }
+
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            serializer = ChatTextSerializer(data=data)
+            print(request.data)
+
+            if serializer.is_valid():
+                helper_instance = HelperChatText(serializer.validated_data)
+                valid_request = helper_instance.build_valid_request()
+                print(valid_request)
+
+                if valid_request.get('is_stream', False):
+                    object_chat = ChatText(valid_request)
+                    print("valid_request", valid_request)
+                    # Streaming response
+                    return StreamingHttpResponse(object_chat.create_stream_response(), content_type="text/event-stream")
+                else:
+                    object_chat = ChatText(valid_request)
+                    response = object_chat.gen_text()
+                    print("valid_request", valid_request)
+                    print("response", response)
+
+                    # Save the conversation in the database using the new function
+                    res = self.save_data_in_db(valid_request, data, response)
+                    return Response(res, status=status.HTTP_200_OK)
+            else:
+                print("serializer.errors", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RequestAborted:
+            # Handle the aborted request
+            return Response({'detail': 'Request aborted by the user'}, status=status.HTTP_499_CLIENT_CLOSED_REQUEST)
+        except Exception as e:
+            print(str(e))
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
