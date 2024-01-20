@@ -11,9 +11,9 @@ class SSD1:
         self.url = "https://api-inference.huggingface.co/models/segmind/SSD-1B"
         self.headers = {
             "content-type": "application/json",
-            "sec-ch-ua": '"Chromium";v="119", "Opera";v="105", "OperaMobile";v="79", ";Not A Brand";v="99"',
+            "sec-ch-ua": '"Chromium";v="120", "Opera";v="105", "OperaMobile";v="79", ";Not A Brand";v="99"',
             "sec-ch-ua-mobile": "?1",
-            "user-agent": "Mozilla/5.0 (Linux; Android 11; M2004J19C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.193 Mobile Safari/537.36 OPR/79.2.4195.76518",
+            "user-agent": "Mozilla/5.0 (Linux; Android 7; M2004J193) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.193 Mobile Safari/537.36 OPR/79.2.4195.76518",
             "x-use-cache": "false",
             "sec-ch-ua-platform": '"Android"',
             "accept": "*/*",

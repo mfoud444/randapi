@@ -141,6 +141,7 @@ class ImageGenerator:
         image_name = self.helper.generate_random_filename_image()
         image_path = os.path.join(script_dir, image_name)
         try:
+            print("make_my_request")
             self.save_image(image_bytes, image_path)
             image_path = self.save_image_supabase(image_path, image_name)
             return image_path
@@ -150,6 +151,12 @@ class ImageGenerator:
             self.gen_image('huggface')
             # return ''
 
+    def query_model_api(self, prompt: str, model: str, url: str, headers: dict) -> bytes:
+        payload = {
+            "inputs": prompt,}
+        response = requests.post(url, headers=headers, json=payload)
+        return response.content
+    
     def make_request(self, prompt: str, model: str) -> str:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         url = self.helper.get_url_model_api(model)
@@ -158,7 +165,9 @@ class ImageGenerator:
         image_path = os.path.join(script_dir, image_name)
         image_bytes = self.query_model_api(prompt, model, url, headers)
         try:
-            image_path = self.save_image(image_bytes, image_path)
+            print("make_request")
+            self.save_image(image_bytes, image_path)
+            image_path = self.save_image_supabase(image_path, image_name)
             return image_path
         except Exception as e:
             print(f"Error: {e}")

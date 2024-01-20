@@ -34,5 +34,5 @@ class HugAPI:
                 time.sleep(self.retry_delay)
                 return self.gen_image()
         else:
-            print(f"Error: Failed to retrieve image. Status code: {response.status_code}")
+            print(f"Error: Failed to retrieve image. Status code: {response.status_code},{response.text}")
             return b''  # Return an empty bytes object to indicate failure
