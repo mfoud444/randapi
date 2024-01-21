@@ -33,7 +33,6 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def get_chat(self, obj):
         chat = []
-        # Implement logic to get the value for the extra field based on the conversation object
         return chat
     def get_type(self, obj):
         if obj.model:
@@ -54,14 +53,10 @@ class ConversationAPIViewSet(viewsets.ModelViewSet):
 
             # Filtering the queryset based on userId
             queryset = self.get_queryset().filter(user_id=user_id,model__type_service=types[0]).order_by('-updated_at')
-
-            # Paginating the queryset
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
                 return self.get_paginated_response(serializer.data)
-
-            # Your existing serialization logic if not paginating
             serializer = self.get_serializer(queryset, many=True)
             data = serializer.data
 

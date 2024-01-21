@@ -60,6 +60,8 @@ class ImageGenerator:
             image = self.make_my_request(prompt, model)
             if image:
                 images_list.append(image)
+            else:
+                self.gen_image('huggface')
         except Exception as e:
             print(f"Error processing model: {e}")
             
@@ -78,8 +80,6 @@ class ImageGenerator:
             image_text_generator = ImageTextGenerator(prompt)
             results = image_text_generator.generate_images_text()
             print("results[0]", results[0])
-
-            # Use ThreadPoolExecutor to parallelize image fetching and saving
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = [executor.submit(self.process_image, url, script_dir) for url in results[0]]
                 concurrent.futures.wait(futures)
@@ -104,24 +104,7 @@ class ImageGenerator:
         except Exception as e:
             print(f"Error processing image: {e}")
             return None
-    # def prompt_bing(self, model, prompt, images_list):
-    #     try:
-    #         script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    #         image_text_generator = ImageTextGenerator(prompt)
-    #         results = image_text_generator.generate_images_text()
-    #         print("results[0]", results[0])
-
-    #         for url in results[0]:
-    #             image_bytes = self.get_image_from_url(url)
-    #             if image_bytes:
-    #                 image_name = self.helper.generate_random_filename_image()
-    #                 image_path = os.path.join(script_dir, image_name)
-    #                 self.save_image(image_bytes, image_path)
-    #                 image_path = self.save_image_supabase(image_path, image_name)
-    #                 images_list.append(image_path)
-    #     except Exception as e:
-    #         print(f"Error lo: {e}")
 
     def get_image_from_url(self, url):
         try:
@@ -148,8 +131,7 @@ class ImageGenerator:
         except Exception as e:
             print(f"Error: {e}")
             print(f"Image Bytes: {image_bytes[:20]}")
-            self.gen_image('huggface')
-            # return ''
+            return ''
 
     def query_model_api(self, prompt: str, model: str, url: str, headers: dict) -> bytes:
         payload = {
