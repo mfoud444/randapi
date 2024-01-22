@@ -1,5 +1,6 @@
 import os
 import io
+import time
 import concurrent.futures
 import requests
 from PIL import Image
@@ -27,7 +28,7 @@ class ImageGenerator:
         return {"image_paths": images_list}
     
     
-    def gen_image(self, type = 'huggface'):
+    def gen_image(self, type = 'huggface_endpoint'):
         image_functions = {
             'bing': self.gen_image_bing,
             'huggface_endpoint': self.gen_image_huggface_endpoint,
@@ -41,21 +42,21 @@ class ImageGenerator:
 
     def gen_image_bing(self):
         try:
-            images_list = self.generate_images([self.req['model'], self.req['model']], self.prompt_bing)
+            images_list = self.generate_images([self.req['model']], self.prompt_bing)
         except Exception as e:
             print(f"Error with Bing, trying Huggface Endpoint: {e}")
-            images_list = self.generate_images([self.req['model']] * 4, self.prompt_model)
+            images_list = self.generate_images([self.req['model']] * 4, self.prompt_model_huggface_endpoint)
 
         return images_list
 
 
     def gen_image_huggface_endpoint(self):
-        return self.generate_images([self.req['model']] * 4, self.prompt_model)
+        return self.generate_images([self.req['model']] * 4, self.prompt_model_huggface_endpoint)
 
     def gen_image_huggface(self):
         return self.generate_images([self.req['model'], 'stable_diffusion_v1_5', 'aesthetic', 'stable_diffusion_v1_5'], self.prompt_model_huggface)
 
-    def prompt_model(self, model, prompt, images_list):
+    def prompt_model_huggface_endpoint(self, model, prompt, images_list):
         try:
             image = self.make_my_request(prompt, model)
             if image:
@@ -106,14 +107,19 @@ class ImageGenerator:
             return None
 
 
-    def get_image_from_url(self, url):
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            return response.content
-        except requests.exceptions.RequestException as e:
-            print(f"Error getting image from URL: {e}")
-            return None
+    def get_image_from_url(self, url, max_attempts=3, retry_interval=3):
+        for attempt in range(1, max_attempts + 1):
+            try:
+                print("url",url)
+                response = requests.get(url)
+                response.raise_for_status()
+                return response.content
+            except requests.exceptions.RequestException as e:
+                print(f"Error getting image from URL (attempt {attempt}): {e}")
+                time.sleep(retry_interval)  # Add a delay before the next attempt
+        
+        print(f"Failed after {max_attempts} attempts.")
+        return None
         
     def process_model(self, model, prompt, images_list, prompt_func):
         prompt_func(model, prompt, images_list)
