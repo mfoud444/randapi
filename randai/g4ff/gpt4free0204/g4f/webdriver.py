@@ -35,6 +35,7 @@ def get_browser(
         WebDriver: An instance of WebDriver configured with the specified options.
     """
     if user_data_dir is None:
+        print("user_data_dir is None",user_data_dir)
         user_data_dir = user_config_dir("g4f")
     if user_data_dir and debug.logging:
         print("Open browser with config dir:", user_data_dir)
