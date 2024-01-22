@@ -80,7 +80,7 @@ class ImageGenerator:
 
             image_text_generator = ImageTextGenerator4(prompt)
             results = image_text_generator.generate_images_text()
-            print("results[0]", results)
+            print("results[0]", results[0])
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = [executor.submit(self.process_image, url, script_dir) for url in results[0]]
                 concurrent.futures.wait(futures)
