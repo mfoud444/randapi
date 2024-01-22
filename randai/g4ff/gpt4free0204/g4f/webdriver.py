@@ -6,6 +6,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from os import path
+import undetected_chromedriver
+print("7777777777777777777777777777777777777777777777777777777777777777")
+
+print("7777777777777777777777777777777777777777777777777777777777777777")
 from os import access, R_OK
 from . import debug
 
@@ -41,6 +45,9 @@ def get_browser(
         options = ChromeOptions()
     if proxy:
         options.add_argument(f'--proxy-server={proxy}')
+    print("7777777777777777777777777777777777777777777777777777777777777777")
+
+    print("7777777777777777777777777777777777777777777777777777777777777777")
     # Check for system driver in docker
     driver = '/usr/bin/chromedriver'
     if not path.isfile(driver) or not access(driver, R_OK):
