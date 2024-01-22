@@ -6,10 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from os import path
-import undetected_chromedriver
-print("7777777777777777777777777777777777777777777777777777777777777777")
 
-print("7777777777777777777777777777777777777777777777777777777777777777")
 from os import access, R_OK
 from . import debug
 
