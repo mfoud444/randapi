@@ -45,6 +45,12 @@ def get_browser(
         options = ChromeOptions()
     if proxy:
         options.add_argument(f'--proxy-server={proxy}')
+    options.add_argument("--disable-extensions")
+    options.add_argument('--disable-application-cache')
+    options.add_argument('--disable-gpu')
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-setuid-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     print("7777777777777777777777777777777777777777777777777777777777777777")
 
     print("7777777777777777777777777777777777777777777777777777777777777777")
