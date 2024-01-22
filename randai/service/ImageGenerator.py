@@ -8,7 +8,7 @@ from util.Settings import Settings
 from util.Helper import Helper
 from .ImageGen.SSD1 import SSD1
 from mysupabase import supabase
-from g4ff import g4ff0202, g4ff0203, ImageTextGenerator
+from g4ff import g4ff0202, g4ff0203, ImageTextGenerator, ImageTextGenerator4
 class ImageGenerator:
     def __init__(self, req):
         self.req = req
@@ -28,7 +28,7 @@ class ImageGenerator:
         return {"image_paths": images_list}
     
     
-    def gen_image(self, type = 'huggface_endpoint'):
+    def gen_image(self, type = 'bing'):
         image_functions = {
             'bing': self.gen_image_bing,
             'huggface_endpoint': self.gen_image_huggface_endpoint,
@@ -78,9 +78,9 @@ class ImageGenerator:
         try:
             script_dir = os.path.dirname(os.path.abspath(__file__))
 
-            image_text_generator = ImageTextGenerator(prompt)
+            image_text_generator = ImageTextGenerator4(prompt)
             results = image_text_generator.generate_images_text()
-            print("results[0]", results[0])
+            print("results[0]", results)
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = [executor.submit(self.process_image, url, script_dir) for url in results[0]]
                 concurrent.futures.wait(futures)
