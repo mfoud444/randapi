@@ -28,7 +28,7 @@ class ImageGenerator:
         return {"image_paths": images_list}
     
     
-    def gen_image(self, type = 'bing'):
+    def gen_image(self, type = 'huggface'):
         image_functions = {
             'bing': self.gen_image_bing,
             'huggface_endpoint': self.gen_image_huggface_endpoint,
@@ -61,8 +61,8 @@ class ImageGenerator:
             image = self.make_my_request(prompt, model)
             if image:
                 images_list.append(image)
-            else:
-                self.gen_image('huggface')
+            # else:
+            #     self.gen_image('huggface')
         except Exception as e:
             print(f"Error processing model: {e}")
             
@@ -81,14 +81,16 @@ class ImageGenerator:
             image_text_generator = ImageTextGenerator4(prompt)
             results = image_text_generator.generate_images_text()
             print("results[0]", results[0])
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(self.process_image, url, script_dir) for url in results[0]]
-                concurrent.futures.wait(futures)
+            for r in results[0]:
+                images_list.append(r)
+            # with concurrent.futures.ThreadPoolExecutor() as executor:
+            #     futures = [executor.submit(self.process_image, url, script_dir) for url in results[0]]
+            #     concurrent.futures.wait(futures)
 
-                for future in futures:
-                    image_path = future.result()
-                    if image_path:
-                        images_list.append(image_path)
+            #     for future in futures:
+            #         image_path = future.result()
+            #         if image_path:
+            #             images_list.append(image_path)
         except Exception as e:
             print(f"Error Bing get image: {e}")
             self.gen_image('huggface_endpoint')

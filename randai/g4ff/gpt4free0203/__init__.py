@@ -1,6 +1,6 @@
-import g4f as g4ff0203
+from .g4ff3 import *
 import time
-from .g4f.Provider.bing import CreateImagesBing
+from .g4ff3.Provider.bing import CreateImagesBing
 from fp.fp import FreeProxy
 
 class ImageTextGenerator:

@@ -38,6 +38,7 @@ class Bing(AsyncGeneratorProvider):
         web_search: bool = False,
         **kwargs
     ) -> AsyncResult:
+        
         if len(messages) < 2:
             prompt = messages[0]["content"]
             context = None
@@ -177,6 +178,7 @@ def create_message(
     web_search: bool = False,
     gpt4_turbo: bool = False
 ) -> str:
+    print("222222222fuckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
     options_sets = Defaults.optionsSets
     if tone == Tones.creative:
         options_sets.append("h3imaginative")
@@ -255,13 +257,16 @@ async def stream_generate(
         gpt4_turbo: bool = False,
         timeout: int = 900
     ):
+    print("fuckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
     headers = Defaults.headers
+    
     if cookies:
         headers["Cookie"] = "; ".join(f"{k}={v}" for k, v in cookies.items())
     async with ClientSession(
         timeout=ClientTimeout(total=timeout),
         headers=headers
     ) as session:
+        
         conversation = await create_conversation(session, proxy)
         image_info = None
         if image:
@@ -289,10 +294,12 @@ async def stream_generate(
                         if obj is None or not obj:
                             continue
                         response = json.loads(obj)
+                        # print("response", response)
                         if response.get('type') == 1 and response['arguments'][0].get('messages'):
                             message = response['arguments'][0]['messages'][0]
                             if (message['contentOrigin'] != 'Apology'):
                                 if 'adaptiveCards' in message:
+                                    print("adaptiveCards")
                                     card = message['adaptiveCards'][0]['body'][0]
                                     if "text" in card:
                                         response_txt = card.get('text')
@@ -300,6 +307,7 @@ async def stream_generate(
                                         inline_txt = card['inlines'][0].get('text')
                                         response_txt += inline_txt + '\n'
                                 elif message.get('contentType') == "IMAGE":
+                                    print("image image")
                                     prompt = message.get('text')
                                     try:
                                         response_txt += format_images_markdown(await create_images(session, prompt, proxy), prompt)
@@ -312,6 +320,7 @@ async def stream_generate(
                                     yield new
                                     returned_text = response_txt
                         elif response.get('type') == 2:
+                            print("response.get('type') == 2")
                             result = response['item']['result']
                             if result.get('error'):
                                 if result["value"] == "CaptchaChallenge":

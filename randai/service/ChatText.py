@@ -7,11 +7,11 @@ from typing import List
 import g4f
 from util import TextTran, Settings
 from chat.database_utils import save_data_in_db
-from g4ff import g4ff0202, g4ff0203
+from g4ff import g4ff0202, g4ff0203, g4ff0204
 settings = Settings()
 class ChatText:
     def __init__(self, req):
-        self.g4f = g4f
+        self.g4f = g4ff0204
         self.valid_request = req
         self.max_attempts = 5
         self.max_retries = 3
@@ -71,6 +71,7 @@ class ChatText:
         if self.model == 'llama2-70b':
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
+            
             self.g4f = g4ff0202
             if self.is_web_search:
                 params["provider"] = 'Bing'

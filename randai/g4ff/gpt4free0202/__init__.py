@@ -1,1 +1,1 @@
-import g4f as g4ff0202
+from .g4ff import *

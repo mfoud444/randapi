@@ -67,7 +67,7 @@ class Bing(AsyncGeneratorProvider):
         cookies = {**Defaults.cookies, **cookies} if cookies else Defaults.cookies
 
         gpt4_turbo = True if model.startswith("gpt-4-turbo") else False
-
+        
         return stream_generate(prompt, tone, image, context, proxy, cookies, web_search, gpt4_turbo, timeout)
 
 def create_context(messages: Messages) -> str:
@@ -280,6 +280,7 @@ async def stream_generate(
     async with ClientSession(
         timeout=ClientTimeout(total=timeout), headers=headers
     ) as session:
+        
         conversation = await create_conversation(session, proxy)
         image_response = await upload_image(session, image, tone, proxy) if image else None
         if image_response:
@@ -295,7 +296,7 @@ async def stream_generate(
                 await wss.send_str(format_message({'protocol': 'json', 'version': 1}))
                 await wss.receive(timeout=timeout)
                 await wss.send_str(create_message(conversation, prompt, tone, context, image_response, web_search, gpt4_turbo))
-
+                print("k0000000000000000000000000000000000000000000")
                 response_txt = ''
                 returned_text = ''
                 final = False
@@ -308,11 +309,15 @@ async def stream_generate(
                         if obj is None or not obj:
                             continue
                         response = json.loads(obj)
+                        print("response", response)
                         if response and response.get('type') == 1 and response['arguments'][0].get('messages'):
+                            print("response['arguments'][0].get('messages'):")
                             message = response['arguments'][0]['messages'][0]
                             image_response = None
                             if (message['contentOrigin'] != 'Apology'):
+                                print("message['contentOrigin']")
                                 if 'adaptiveCards' in message:
+                                    print("adaptiveCards")
                                     card = message['adaptiveCards'][0]['body'][0]
                                     if "text" in card:
                                         response_txt = card.get('text')
@@ -320,8 +325,10 @@ async def stream_generate(
                                         inline_txt = card['inlines'][0].get('text')
                                         response_txt += inline_txt + '\n'
                                 elif message.get('contentType') == "IMAGE":
+                                    print("IMAGE IMAGE IMAGE")
                                     prompt = message.get('text')
                                     try:
+                                        
                                         image_response = ImageResponse(await create_images(session, prompt, proxy), prompt)
                                     except:
                                         response_txt += f"\nhttps://www.bing.com/images/create?q={parse.quote(prompt)}"
@@ -334,6 +341,7 @@ async def stream_generate(
                             if image_response:
                                 yield image_response
                         elif response.get('type') == 2:
+                            print("response.get('type') == 2")
                             result = response['item']['result']
                             if result.get('error'):
                                 if result["value"] == "CaptchaChallenge":
