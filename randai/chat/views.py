@@ -15,8 +15,14 @@ from .Conversation import Conversation
 from service import ChatText, ImageGenerator
 from django.http import StreamingHttpResponse, HttpResponse
 from util import TextTran, Settings, PandocConverter
-from chat.ModelsAi import ModelAI ,  ModelAISerializer
-from chat.Messages import MessageUser , MessageAI , MessageUserSerializer , MessageAISerializer
+from chat.ModelsAi import ModelAI, ModelAISerializer
+from chat.Messages import (
+    MessageUser,
+    MessageAI,
+    MessageUserSerializer,
+    MessageAISerializer,
+)
+
 settings = Settings()
 import os
 
@@ -75,9 +81,12 @@ class ApiOptionViewSet(viewsets.ModelViewSet):
     queryset = ApiOption.objects.all()
     serializer_class = ApiOptionSerializer
 
+
 class ApiKeyViewSet(viewsets.ModelViewSet):
     queryset = ApiKey.objects.all()
     serializer_class = ApiKeySerializer
+
+
 class ModelAPIViewSet(viewsets.ModelViewSet):
     queryset = ModelAI.objects.all()
     serializer_class = ModelAISerializer
@@ -103,8 +112,6 @@ class MessageAIAPIViewSet(viewsets.ModelViewSet):
     serializer_class = MessageAISerializer
 
 
-
-
 class ChatAPIView(APIView):
     def handle_request(self, request, is_image):
         try:
@@ -116,31 +123,34 @@ class ChatAPIView(APIView):
                 valid_request = serializer.validated_data
                 print(valid_request)
                 if is_image:
-                        print("serializer.validated_data")
-                        helper_instance = HelperChatText(serializer.validated_data, True)
-                        valid_request = helper_instance.build_valid_request()
-                        print("valid_request", valid_request)
-                        object_chat = ImageGenerator(valid_request)
-                        response = object_chat.gen_image()
-                        if response['image_paths']:
-                            print("response", response)
-                            res = save_data_in_db(valid_request, response, is_image)
-                            print("res", res)
-                            return Response(res, status=status.HTTP_200_OK)
-                        else:
-                            print(f"Error processing image request:")
-                            return Response({"error": "Error processing image request."},
-                                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    print("serializer.validated_data")
+                    helper_instance = HelperChatText(serializer.validated_data, True)
+                    valid_request = helper_instance.build_valid_request()
+                    print("valid_request", valid_request)
+                    object_chat = ImageGenerator(valid_request)
+                    response = object_chat.gen_image()
+                    if response["image_paths"]:
+                        print("response", response)
+                        res = save_data_in_db(valid_request, response, is_image)
+                        print("res", res)
+                        return Response(res, status=status.HTTP_200_OK)
+                    else:
+                        print(f"Error processing image request:")
+                        return Response(
+                            {"error": "Error processing image request."},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        )
                 else:
                     helper_instance = HelperChatText(serializer.validated_data)
                     valid_request = helper_instance.build_valid_request()
                     object_chat = ChatText(valid_request)
                     print("valid_request", valid_request)
 
-
-                    if valid_request.get('is_stream', False):
-                        return StreamingHttpResponse(object_chat.create_stream_response(),
-                                                     content_type="text/event-stream")
+                    if valid_request.get("is_stream", False):
+                        return StreamingHttpResponse(
+                            object_chat.create_stream_response(),
+                            content_type="text/event-stream",
+                        )
                     else:
                         response = object_chat.gen_text()
                         print("valid_request", valid_request)
@@ -148,20 +158,24 @@ class ChatAPIView(APIView):
                         res = save_data_in_db(valid_request, response)
                         return Response(res, status=status.HTTP_200_OK)
 
-
             else:
                 print("serializer.errors", serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except RequestAborted:
             # Handle the aborted request
-            return Response({'detail': 'Request aborted by the user'}, status=status.HTTP_499_CLIENT_CLOSED_REQUEST)
+            return Response(
+                {"detail": "Request aborted by the user"},
+                status=status.HTTP_499_CLIENT_CLOSED_REQUEST,
+            )
         except Exception as e:
             print(str(e))
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class ChatTextAPIView(ChatAPIView):
     def post(self, request, *args, **kwargs):
         return self.handle_request(request, is_image=False)
+
 
 class ChatImageAPIView(ChatAPIView):
     def post(self, request, *args, **kwargs):
@@ -174,28 +188,35 @@ class GetImageView(APIView):
         try:
             serializer = ImagePathSerializer(data=request.query_params)
             serializer.is_valid(raise_exception=True)
-            path = serializer.validated_data['path']
+            path = serializer.validated_data["path"]
             path = os.path.normpath(path)
             print(path)
             if not os.path.exists(path) or not os.path.isfile(path):
-                return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
-            with open(path, 'rb') as image_file:
+                return Response(
+                    {"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+            with open(path, "rb") as image_file:
                 return HttpResponse(image_file.read(), content_type="image/png")
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
+from .Messages import ListMessagesSerializer
 
-from .Messages import  ListMessagesSerializer
+
 class DocumentDownloadView(APIView):
     def build_message(self, data):
         try:
             print("data", data)
-            type_data = data.get('type_data', '') 
-            conversation_id = data.get('conversation_id', '')
-            print(conversation_id, type_data )
-            if type_data == 'conversation':
-                message_user_instances = MessageUser.objects.filter(conversation__id=conversation_id)
+            type_data = data.get("type_data", "")
+            conversation_id = data.get("conversation_id", "")
+            print(conversation_id, type_data)
+            if type_data == "conversation":
+                message_user_instances = MessageUser.objects.filter(
+                    conversation__id=conversation_id
+                )
 
                 if message_user_instances:
                     all_messages = []
@@ -204,22 +225,28 @@ class DocumentDownloadView(APIView):
                         serializer = ListMessagesSerializer(message_user_instance)
                         data = serializer.data
 
-                        user_message = data['message_user']['text'] if 'message_user' in data else ''
-                        user_message += '\n'
+                        user_message = (
+                            data["message_user"]["text"]
+                            if "message_user" in data
+                            else ""
+                        )
+                        user_message += "\n"
                         assistant_messages = []
-                        for i, msg in enumerate(data['message_ai']):
-                            text = msg.get('text', '')
-                            formatted_msg = (f"Answer-{i}\n" if i > 0 else '') + f"\n{text}\n"
+                        for i, msg in enumerate(data["message_ai"]):
+                            text = msg.get("text", "")
+                            formatted_msg = (
+                                f"Answer-{i}\n" if i > 0 else ""
+                            ) + f"\n{text}\n"
                             assistant_messages.append(formatted_msg)
 
                         all_messages.append(user_message)
                         all_messages.extend(assistant_messages)
 
                     # Join the messages with line breaks
-                    return '\n'.join(all_messages)
-            elif type_data == 'chat':
-                message_user_id = data.get('message_user_id', '')
-                message_ai_id = data.get('message_ai_id', 0)
+                    return "\n".join(all_messages)
+            elif type_data == "chat":
+                message_user_id = data.get("message_user_id", "")
+                message_ai_id = data.get("message_ai_id", 0)
 
                 # Retrieve the specific message based on message_user_id and index
                 message_user_instance = MessageUser.objects.filter(
@@ -230,20 +257,21 @@ class DocumentDownloadView(APIView):
                     serializer = ListMessagesSerializer(message_user_instance)
                     data = serializer.data
 
-                    user_message = data['message_user']['text'] if 'message_user' in data else ''
-                    user_message += '\n'
-                    assistant_message = ''
-                    print("data['message_ai']", data['message_ai'])
-                    for msg in data['message_ai']:
-                        if msg['id'] == message_ai_id:
-                           assistant_message = msg['text'] 
-                  
+                    user_message = (
+                        data["message_user"]["text"] if "message_user" in data else ""
+                    )
+                    user_message += "\n"
+                    assistant_message = ""
+                    print("data['message_ai']", data["message_ai"])
+                    for msg in data["message_ai"]:
+                        if msg["id"] == message_ai_id:
+                            assistant_message = msg["text"]
 
                     # Join the messages with line breaks
                     return f"{user_message}\n{assistant_message}"
 
             else:
-                return 'No messages found for the given conversation_id'
+                return "No messages found for the given conversation_id"
 
         except Exception as e:
             return str(e)
@@ -252,35 +280,37 @@ class DocumentDownloadView(APIView):
         try:
             serializer = DocumentclassSerializer(data=request.query_params)
             serializer.is_valid(raise_exception=True)
-            print("serializer.validated_data['conversation_id']", serializer.validated_data['conversation_id'])
+            print(
+                "serializer.validated_data['conversation_id']",
+                serializer.validated_data["conversation_id"],
+            )
             text_mt = self.build_message(serializer.validated_data)
             print("serializer.validated_data['conversation_id']", text_mt)
             input_text = f"{text_mt}"
-            output_format = serializer.validated_data.get('output_format', '').lower()
-            if output_format == 'docx':
+            output_format = serializer.validated_data.get("output_format", "").lower()
+            if output_format == "docx":
                 output_file = "output.docx"
                 options = ["--to=docx"]
-            elif output_format == 'pptx':
+            elif output_format == "pptx":
                 output_file = "output.pptx"
                 options = ["--to=pptx"]
             else:
                 output_file = "output.pdf"
                 options = [
-                    # "--pdf-engine=lualatex"
                     "--pdf-engine=xelatex",
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
-                  "--variable=mainfont:Amiri",  
-           
+                    "--variable=mainfont:Amiri",
+                    "--variable=lang:ar",
+                    "--variable=dir:rtl",
                 ]
-                #   # Set a font that supports Arabic script
-                #     "--variable=lang:arabic", 
             pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)
-            response = FileResponse(open(file_path, 'rb'))
-            response['Content-Disposition'] = f'attachment; filename="{output_file}"'
+            response = FileResponse(open(file_path, "rb"))
+            response["Content-Disposition"] = f'attachment; filename="{output_file}"'
             return response
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
