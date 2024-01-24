@@ -23,7 +23,7 @@ class ChatText:
         self.max_retries = 3
         self.completion_id = ''.join(random.choices(string.ascii_letters + string.digits, k=28))
         self.completion_timestamp = int(time.time())
-        self.webdriver = None  # Initialize webdriver attribute
+        self.webdriver = None 
         self.initialize_request_attributes(req)
         
 
