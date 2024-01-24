@@ -269,10 +269,10 @@ class DocumentDownloadView(APIView):
                     "--pdf-engine=xelatex",
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
-                 
+                  "--variable=mainfont:Amiri",  
            
                 ]
-                #    "--variable=mainfont:Amiri",  # Set a font that supports Arabic script
+                #   # Set a font that supports Arabic script
                 #     "--variable=lang:arabic", 
             pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
