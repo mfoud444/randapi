@@ -74,9 +74,9 @@ class ChatText:
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
             params["provider"] = 'Bing'
-            proxy = FreeProxy().get()
-            print("proxy", proxy)
-            params["proxy"] = proxy
+            # proxy = FreeProxy().get()
+            # print("proxy", proxy)
+            # params["proxy"] = proxy
             self.g4f = g4f
             if self.is_web_search:
                 params["web_search"] = self.is_web_search
