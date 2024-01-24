@@ -49,11 +49,13 @@ class Settings:
     timeout_chat = 90
     default_proxy = None
     system_message_rand = {}
-    
-    
+
+    def __init__(self):
+        self.load_system_message_rand()
+
     @classmethod
     def load_system_message_rand(cls):
-        json_file_path = 'system_prompt.json'
+        json_file_path = Path(__file__).resolve().parent / 'system_prompt.json'
         try:
             with open(json_file_path, 'r', encoding='utf-8') as json_file:
                 cls.system_message_rand = json.load(json_file)
@@ -63,8 +65,3 @@ class Settings:
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON in {json_file_path}: {e}")
             cls.system_message_rand = {}
-            
-            
-    load_system_message_rand()
-
-
