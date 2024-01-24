@@ -23,6 +23,7 @@ class ChatText:
         self.max_retries = 3
         self.completion_id = ''.join(random.choices(string.ascii_letters + string.digits, k=28))
         self.completion_timestamp = int(time.time())
+        self.webdriver = None  # Initialize webdriver attribute
         self.initialize_request_attributes(req)
         
 
@@ -85,8 +86,8 @@ class ChatText:
             self.g4f = g4f
             options = ChromeOptions()
             options.add_argument("--incognito")
-            webdriver = Chrome(options=options, headless=True)
-            params["webdriver"] = webdriver
+            self.webdriver = Chrome(options=options, headless=True)
+            params["webdriver"] = self.webdriver
             
             if self.is_web_search:
                 params["web_search"] = self.is_web_search
@@ -131,11 +132,12 @@ class ChatText:
                 saved_end_data["messageAi"]["text"] = ""
                 content = json.dumps(saved_end_data, separators=(',', ':'))
                 yield f'{content} \n'
-                if params.get('webdriver', None):
-                    webdriver.quit()
                 break
             except (RuntimeError, Exception) as e:
                 print(f"Error {e}")
                 print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
                 attempts += 1
                 continue
+            finally:
+                if self.webdriver:
+                    self.webdriver.quit() 
