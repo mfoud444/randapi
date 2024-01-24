@@ -86,7 +86,7 @@ class ChatText:
             self.g4f = g4f
             options = ChromeOptions()
             options.add_argument("--incognito")
-            self.webdriver = Chrome(options=options, headless=True)
+            self.webdriver = Chrome(options=options, headless=True, version_main = 120)
             params["webdriver"] = self.webdriver
             
             if self.is_web_search:
