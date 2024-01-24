@@ -11,7 +11,7 @@ from g4ff import g4ff0202, g4ff0203, g4ff0204
 settings = Settings()
 class ChatText:
     def __init__(self, req):
-        self.g4f = g4ff0204
+        self.g4f = g4f
         self.valid_request = req
         self.max_attempts = 5
         self.max_retries = 3
