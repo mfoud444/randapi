@@ -214,9 +214,7 @@ class DocumentDownloadView(APIView):
             conversation_id = data.get("conversation_id", "")
             print(conversation_id, type_data)
             if type_data == "conversation":
-                message_user_instances = MessageUser.objects.filter(
-                    conversation__id=conversation_id
-                )
+                message_user_instances = MessageUser.objects.filter(conversation__id=conversation_id)
 
                 if message_user_instances:
                     all_messages = []
@@ -247,29 +245,19 @@ class DocumentDownloadView(APIView):
             elif type_data == "chat":
                 message_user_id = data.get("message_user_id", "")
                 message_ai_id = data.get("message_ai_id", 0)
-
-                # Retrieve the specific message based on message_user_id and index
-                message_user_instance = MessageUser.objects.filter(
-                    id=message_user_id, conversation__id=conversation_id
-                ).first()
-
+                message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id).first()
                 if message_user_instance:
                     serializer = ListMessagesSerializer(message_user_instance)
                     data = serializer.data
-
-                    user_message = (
-                        data["message_user"]["text"] if "message_user" in data else ""
-                    )
+                    user_message = (data["message_user"]["text"] if "message_user" in data else "")
                     user_message += "\n"
                     assistant_message = ""
                     print("data['message_ai']", data["message_ai"])
-                    for msg in data["message_ai"]:
-                        if msg["id"] == message_ai_id:
-                            assistant_message = msg["text"]
-
-                    # Join the messages with line breaks
+                    for i, msg in enumerate(data["message_ai"]):
+                        id = msg.get("id", "")
+                        if message_ai_id == id:
+                            assistant_message =msg.get("text", "")
                     return f"{user_message}\n{assistant_message}"
-
             else:
                 return "No messages found for the given conversation_id"
 
@@ -280,12 +268,7 @@ class DocumentDownloadView(APIView):
         try:
             serializer = DocumentclassSerializer(data=request.query_params)
             serializer.is_valid(raise_exception=True)
-            print(
-                "serializer.validated_data['conversation_id']",
-                serializer.validated_data["conversation_id"],
-            )
             text_mt = self.build_message(serializer.validated_data)
-            print("serializer.validated_data['conversation_id']", text_mt)
             input_text = f"{text_mt}"
             output_format = serializer.validated_data.get("output_format", "").lower()
             if output_format == "docx":
