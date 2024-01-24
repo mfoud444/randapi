@@ -131,6 +131,8 @@ class ChatText:
                 saved_end_data["messageAi"]["text"] = ""
                 content = json.dumps(saved_end_data, separators=(',', ':'))
                 yield f'{content} \n'
+                if params.get('webdriver', None):
+                    webdriver.quit()
                 break
             except (RuntimeError, Exception) as e:
                 print(f"Error {e}")
