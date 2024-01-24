@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 class Settings:
@@ -47,14 +48,23 @@ class Settings:
     }
     timeout_chat = 90
     default_proxy = None
-    system_message_rand = {
-        'en': 'Use emojis in your answers, Start your answer by "Hello, I am Rand AI, developed by Mohammed Foud"',
-        'ar': 'إستخدم الإيموجي في إجاباتك و إبد إجابتك بعبارة " مرحبًا، أنا راند،تم تطويري بواسطة محمد فؤاد"',
-        'es': 'Hola, soy Rand AI, desarrollado por Mohammed Foud',
-        'fr': 'Bonjour, je suis Rand AI, développé par Mohammed Foud',
-        'de': 'Hallo, ich bin Rand AI, entwickelt von Mohammed Foud',
-        'it': 'Ciao, sono Rand AI, sviluppato da Mohammed Foud',
-        'ja': 'こんにちは、私はランドAI、モハメッド・ファウドによって開発されました'
-    }
+    system_message_rand = {}
+    
+    
+    @classmethod
+    def load_system_message_rand(cls):
+        json_file_path = 'system_prompt.json'
+        try:
+            with open(json_file_path, 'r', encoding='utf-8') as json_file:
+                cls.system_message_rand = json.load(json_file)
+        except FileNotFoundError:
+            print(f"Warning: {json_file_path} not found. Using an empty dictionary.")
+            cls.system_message_rand = {}
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON in {json_file_path}: {e}")
+            cls.system_message_rand = {}
+            
+            
+    load_system_message_rand()
 
 
