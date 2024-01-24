@@ -71,10 +71,9 @@ class ChatText:
         if self.model == 'llama2-70b':
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
-            
+            params["provider"] = 'Bing'
             self.g4f = g4f
             if self.is_web_search:
-                params["provider"] = 'Bing'
                 params["web_search"] = self.is_web_search
         if self.image:
             params["image"] = self.image
