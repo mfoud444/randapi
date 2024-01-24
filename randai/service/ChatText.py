@@ -8,6 +8,7 @@ import g4f
 from util import TextTran, Settings
 from chat.database_utils import save_data_in_db
 from g4ff import g4ff0202, g4ff0203, g4ff0204
+from fp.fp import FreeProxy
 settings = Settings()
 class ChatText:
     def __init__(self, req):
@@ -18,6 +19,7 @@ class ChatText:
         self.completion_id = ''.join(random.choices(string.ascii_letters + string.digits, k=28))
         self.completion_timestamp = int(time.time())
         self.initialize_request_attributes(req)
+        
 
     def initialize_request_attributes(self, req):
         self.model = req.get('model', settings.default_model_text['code'])
@@ -72,6 +74,9 @@ class ChatText:
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
             params["provider"] = 'Bing'
+            proxy = FreeProxy().get()
+            print("proxy", proxy)
+            params["proxy"] = proxy
             self.g4f = g4f
             if self.is_web_search:
                 params["web_search"] = self.is_web_search
