@@ -72,7 +72,7 @@ class ChatText:
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
             
-            self.g4f = g4ff0202
+            self.g4f = g4f
             if self.is_web_search:
                 params["provider"] = 'Bing'
                 params["web_search"] = self.is_web_search

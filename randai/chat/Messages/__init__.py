@@ -8,13 +8,13 @@ from chat.models import Language
 
 class TextTranMessage(models.Model):
     code = models.ForeignKey(Language, on_delete=models.CASCADE)
-    text = models.CharField(max_length=255)
+    text = models.TextField()
     provider = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
 class MessageAI(models.Model):
-    text = models.CharField(max_length=255)
+    text = models.TextField()
     text_tran = models.ManyToManyField(TextTranMessage, blank=True)
     model = models.ForeignKey(ModelAI, on_delete=models.CASCADE)
     is_like = models.BooleanField(null=True, default=None)
@@ -23,7 +23,7 @@ class MessageAI(models.Model):
 
 class MessageUser(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
-    text = models.CharField(max_length=255)
+    text = models.TextField()
     text_tran = models.ManyToManyField(TextTranMessage, blank=True)
     image_path =  models.CharField(max_length=255 , blank=True)
     message_ai = models.ManyToManyField(MessageAI)
