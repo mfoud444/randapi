@@ -232,6 +232,7 @@ class DocumentDownloadView(APIView):
 
                     user_message = data['message_user']['text'] if 'message_user' in data else ''
                     user_message += '\n'
+                    print("data['message_ai']", data['message_ai'])
                     assistant_message = next(
                     (msg['text'] for msg in data['message_ai'] if msg['id'] == message_ai_id),
                     ''
@@ -264,8 +265,8 @@ class DocumentDownloadView(APIView):
             else:
                 output_file = "output.pdf"
                 options = [
-                    "--pdf-engine=lualatex"
-                    # "--pdf-engine=xelatex",
+                    # "--pdf-engine=lualatex"
+                    "--pdf-engine=xelatex",
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                  
