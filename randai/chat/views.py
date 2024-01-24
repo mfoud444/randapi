@@ -233,10 +233,10 @@ class DocumentDownloadView(APIView):
                     user_message = data['message_user']['text'] if 'message_user' in data else ''
                     user_message += '\n'
                     print("data['message_ai']", data['message_ai'])
-                    assistant_message = next(
-                    (msg['text'] for msg in data['message_ai'] if msg['id'] == message_ai_id),
-                    ''
-                     )
+                    for msg in data['message_ai']:
+                        if msg['id'] == message_ai_id:
+                           assistant_message = msg['text'] 
+                  
 
                     # Join the messages with line breaks
                     return f"{user_message}\n{assistant_message}"
