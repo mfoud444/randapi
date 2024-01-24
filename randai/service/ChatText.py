@@ -10,6 +10,11 @@ from chat.database_utils import save_data_in_db
 from g4ff import g4ff0202, g4ff0203, g4ff0204
 from fp.fp import FreeProxy
 settings = Settings()
+import g4f
+from undetected_chromedriver import Chrome, ChromeOptions
+
+
+
 class ChatText:
     def __init__(self, req):
         self.g4f = g4f
@@ -78,8 +83,14 @@ class ChatText:
             # print("proxy", proxy)
             # params["proxy"] = proxy
             self.g4f = g4f
+            options = ChromeOptions()
+            options.add_argument("--incognito")
+            webdriver = Chrome(options=options, headless=True)
+            params["webdriver"] = webdriver
+            
             if self.is_web_search:
                 params["web_search"] = self.is_web_search
+                
         if self.image:
             params["image"] = self.image
             
