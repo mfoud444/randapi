@@ -73,7 +73,7 @@ class ChatText:
         if self.model == 'llama2-70b':
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
-            params["provider"] = 'Liaobots'
+            # params["provider"] = 'Liaobots'
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
