@@ -264,7 +264,8 @@ class DocumentDownloadView(APIView):
             else:
                 output_file = "output.pdf"
                 options = [
-                    "--pdf-engine=xelatex",
+                    "--pdf-engine=lualatex"
+                    # "--pdf-engine=xelatex",
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                  

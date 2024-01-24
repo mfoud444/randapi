@@ -7,7 +7,7 @@ from typing import List
 import g4f
 from util import TextTran, Settings
 from chat.database_utils import save_data_in_db
-# from g4ff import g4ff0202, g4ff0203, g4ff0204
+from g4ff import g4ff0202, g4ff0203, g4ff0204
 settings = Settings()
 class ChatText:
     def __init__(self, req):
