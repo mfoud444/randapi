@@ -76,8 +76,8 @@ class ChatText:
             "messages": self.message,
             "stream": self.stream,
         }
-        if self.model == 'llama2-70b':
-            params["provider"] = 'Llama2'
+        # if self.model == 'llama2-70b':
+        #     params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
             params["provider"] = 'Bing'
             # proxy = FreeProxy().get()
