@@ -289,7 +289,7 @@ class DocumentDownloadView(APIView):
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                     "--variable=mainfont:Amiri",
-                
+                "--variable=lang:ar",
                  
                 ]
             #    "--variable=lang:ar",
