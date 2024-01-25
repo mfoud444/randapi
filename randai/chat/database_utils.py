@@ -25,6 +25,7 @@ def save_data_in_db(valid_request, response, is_image=False):
                 'id':valid_request['conversation_id'],
                 'user_id': valid_request['user_id'],
                 'lang': language_instance,
+                'type': 'image' if is_image else 'text',
                 'model': model_instance,
                 'title': valid_request['prompt'][:50],
                 'is_pin': False,
@@ -33,6 +34,7 @@ def save_data_in_db(valid_request, response, is_image=False):
                 'created_at': timezone.now(),
                 'updated_at': timezone.now(),
             }
+            
             conversation = Conversation.objects.create(**conversation_data)
         else:
             conversation = valid_request['conv']

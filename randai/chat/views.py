@@ -212,6 +212,10 @@ class DocumentDownloadView(APIView):
             print("data", data)
             type_data = data.get("type_data", "")
             conversation_id = data.get("conversation_id", "")
+            try:
+                conversation = Conversation.objects.filter(id=conversation_id)
+            except Conversation.DoesNotExist:
+                return Response({"error": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
             print(conversation_id, type_data)
             if type_data == "conversation":
                 message_user_instances = MessageUser.objects.filter(conversation__id=conversation_id)
@@ -240,7 +244,7 @@ class DocumentDownloadView(APIView):
                         all_messages.append(user_message)
                         all_messages.extend(assistant_messages)
 
-                    # Join the messages with line breaks
+                 
                     return "\n".join(all_messages)
             elif type_data == "chat":
                 message_user_id = data.get("message_user_id", "")
@@ -255,6 +259,7 @@ class DocumentDownloadView(APIView):
                     print("data['message_ai']", data["message_ai"])
                     for i, msg in enumerate(data["message_ai"]):
                         id = msg.get("id", "")
+                        print("id", id)
                         if message_ai_id == id:
                             assistant_message =msg.get("text", "")
                     return f"{user_message}\n{assistant_message}"
@@ -284,9 +289,11 @@ class DocumentDownloadView(APIView):
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                     "--variable=mainfont:Amiri",
-                    "--variable=lang:ar",
-                    "--variable=dir:rtl",
+                
+                 
                 ]
+            #    "--variable=lang:ar",
+            #   "--variable=dir:rtl",
             pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)

@@ -7,10 +7,13 @@ from chat.models import Language , Prompt
 from chat.ModelsAi import ModelAI , ModelAISerializer
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
+from util import  Settings
+settings = Settings()
 class Conversation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user_id = models.UUIDField(blank=True, null=True)
     lang = models.ForeignKey(Language, on_delete=models.CASCADE, blank=True, null=True)
+    type = models.CharField(max_length=10, choices=settings.TYPE_CHOICES, default='text')
     model = models.ForeignKey(ModelAI, on_delete=models.CASCADE)
     prompt = models.ForeignKey(Prompt, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=255)
@@ -25,7 +28,7 @@ class Conversation(models.Model):
 class ConversationSerializer(serializers.ModelSerializer):
     model_info = ModelAISerializer(source='model', read_only=True)
     chat = serializers.SerializerMethodField()
-    type = serializers.SerializerMethodField()
+    # type = serializers.SerializerMethodField()
 
     class Meta:
         model = Conversation
@@ -34,9 +37,9 @@ class ConversationSerializer(serializers.ModelSerializer):
     def get_chat(self, obj):
         chat = []
         return chat
-    def get_type(self, obj):
-        if obj.model:
-            return obj.model.type_service
+    # def get_type(self, obj):
+    #     if obj.model:
+    #         return obj.model.type_service
 
 class ConversationAPIViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -52,7 +55,7 @@ class ConversationAPIViewSet(viewsets.ModelViewSet):
             print("types:", types)
 
             # Filtering the queryset based on userId
-            queryset = self.get_queryset().filter(user_id=user_id,model__type_service=types[0]).order_by('-updated_at')
+            queryset = self.get_queryset().filter(user_id=user_id,type=types[0]).order_by('-updated_at')
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)
@@ -93,7 +96,7 @@ from rest_framework.decorators import api_view
 @api_view(['DELETE'])
 def delete_conversation(request, user_id, type):
     try:
-        conversation = Conversation.objects.filter(user_id=user_id, model__type_service=type)
+        conversation = Conversation.objects.filter(user_id=user_id, type=type)
     except Conversation.DoesNotExist:
         return Response({"error": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
     conversation.delete()
