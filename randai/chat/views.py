@@ -212,6 +212,8 @@ class DocumentDownloadView(APIView):
             print("data", data)
             type_data = data.get("type_data", "")
             conversation_id = data.get("conversation_id", "")
+            message_user_id = data.get("message_user_id", "")
+            message_ai_id = data.get("message_ai_id", 0)
             try:
                 conversation = Conversation.objects.filter(id=conversation_id)
             except Conversation.DoesNotExist:
@@ -247,8 +249,6 @@ class DocumentDownloadView(APIView):
                  
                     return "\n".join(all_messages)
             elif type_data == "chat":
-                message_user_id = data.get("message_user_id", "")
-                message_ai_id = data.get("message_ai_id", 0)
                 print("hhhhhhhhhh")
                 print("message_ai_id", message_ai_id)
                 message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id).first()
@@ -263,6 +263,7 @@ class DocumentDownloadView(APIView):
                         id = msg.get("id", "")
                         print("id", id)
                         if message_ai_id == id:
+                            print("messsage ooooooooooooooooooooh")
                             assistant_message =msg.get("text", "")
                     return f"{user_message}\n{assistant_message}"
             else:
@@ -292,10 +293,10 @@ class DocumentDownloadView(APIView):
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                     "--variable=mainfont:Amiri",
               
-                 "--variable=dir:rtl",
+                
                 ]
             #    "--variable=lang:ar",
-            #   
+            #    "--variable=dir:rtl",
             pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)
