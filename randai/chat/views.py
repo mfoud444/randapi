@@ -251,7 +251,7 @@ class DocumentDownloadView(APIView):
             elif type_data == "chat":
                 print("hhhhhhhhhh")
                 print("message_ai_id", message_ai_id)
-                message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id)
+                message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id).first()
                 if message_user_instance:
                     serializer = ListMessagesSerializer(message_user_instance)
                     data = serializer.data
@@ -262,6 +262,7 @@ class DocumentDownloadView(APIView):
                     for i, msg in enumerate(data["message_ai"]):
                         id = msg.get("id", "")
                         print("id", id)
+                        assistant_message =msg.get("text", "")
                         if message_ai_id == id:
                             print("messsage ooooooooooooooooooooh")
                             assistant_message =msg.get("text", "")
