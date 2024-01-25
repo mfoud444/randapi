@@ -249,6 +249,8 @@ class DocumentDownloadView(APIView):
             elif type_data == "chat":
                 message_user_id = data.get("message_user_id", "")
                 message_ai_id = data.get("message_ai_id", 0)
+                print("hhhhhhhhhh")
+                print("message_ai_id", message_ai_id)
                 message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id).first()
                 if message_user_instance:
                     serializer = ListMessagesSerializer(message_user_instance)
@@ -290,10 +292,10 @@ class DocumentDownloadView(APIView):
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                     "--variable=mainfont:Amiri",
               
-                 
+                 "--variable=dir:rtl",
                 ]
             #    "--variable=lang:ar",
-            #   "--variable=dir:rtl",
+            #   
             pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)
