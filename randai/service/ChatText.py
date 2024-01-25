@@ -79,15 +79,15 @@ class ChatText:
         # if self.model == 'llama2-70b':
         #     params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
-            params["provider"] = 'Bing'
+            # params["provider"] = 'Bing'
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
             self.g4f = g4f
-            options = ChromeOptions()
-            options.add_argument("--incognito")
-            self.webdriver = Chrome(options=options, headless=True, version_main = 120)
-            params["webdriver"] = self.webdriver
+            # options = ChromeOptions()
+            # options.add_argument("--incognito")
+            # self.webdriver = Chrome(options=options, headless=True, version_main = 120)
+            # params["webdriver"] = self.webdriver
             
             if self.is_web_search:
                 params["web_search"] = self.is_web_search
