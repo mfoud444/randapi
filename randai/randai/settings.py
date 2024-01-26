@@ -145,7 +145,7 @@ CORS_ALLOWED_ORIGINS = [
 "http://10.2.99.12:3006",
 "http://127.0.0.1:8000",
 "https://rankchat-373eb.web.app",
-
+"https://randai.web.app"
 ]
 
 CORS_ALLOW_METHODS = [
@@ -170,7 +170,7 @@ CORS_ALLOW_HEADERS = [
 'x-requested-with',
 ]
 
-ALLOWED_HOSTS = ['10.2.99.12', '127.0.0.1','randai09078-randdaj.hf.space']
+ALLOWED_HOSTS = ['10.2.99.12', '127.0.0.1','randai09078-randdaj.hf.space', 'randai.web.app']
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
