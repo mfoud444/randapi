@@ -25,7 +25,7 @@ def translate_with_code_handling(markdown_text, lang_code, text_tran_user):
 
     # Translate the text without code
     res_translate = TextTran().translate(text_without_code, lang_code)
-
+    translated_text_with_code = markdown_text
     if res_translate:
         # Re-insert code blocks into the translated text
         translated_text_with_code = insert_code_blocks(res_translate, markdown_text)

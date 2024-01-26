@@ -25,6 +25,20 @@ class ChatText:
         self.completion_timestamp = int(time.time())
         self.webdriver = None 
         self.initialize_request_attributes(req)
+        self.steps = {
+            1: "Develop an introduction for an academic work that highlights the significance of the provided topic: "
+               "\"Develop an introduction that emphasizes the significance and relevance of the research topic: "
+               "[{topic}]. Discuss its importance in the broader context and outline the research aims and objectives.\"",
+            
+            2: "Assess the reliability and validity of the chosen measurement instruments in the research methodology for [{topic}].",
+            
+            3: "Illustrate the main outcomes of the research through clear and concise tables, graphs, "
+               "or charts for [{topic}].",
+            
+            4: "Highlight the implications of the study’s findings for future research directions and potential areas of exploration.",
+            
+            5: "Create a reference list following the APA style for the sources cited in your research paper on [{topic}]."
+        }
         
 
     def initialize_request_attributes(self, req):
@@ -141,3 +155,44 @@ class ChatText:
             finally:
                 if self.webdriver:
                     self.webdriver.quit() 
+
+
+
+    def generate_research(self, topic):
+        retries = 0
+        while retries < self.max_retries:
+            try:
+                params = self.prepare_params()
+                for step in self.steps:
+                    prompt =  self.steps[step].format(topic=topic)
+                    params['messages'] = [{"role": "user", "content": prompt}]
+                    response = self.g4f.ChatCompletion.create(**params)
+                    if response is not None:
+                        return response
+                    else:
+                        print("Received None response. Retrying...")
+                        retries += 1
+
+            except (RuntimeError, Exception) as e:
+                print(f"Error during generate:")
+                if retries < self.max_retries - 1:
+                    print(f"Retrying... Attempt {retries + 2}/{self.max_retries}")
+                    retries += 1
+                else:
+                    raise
+    def build_prompt_research(self,topic, step):
+        introduction = f"Develop an introduction for an academic work that highlights the significance of the provided topic:\
+“Develop an introduction that emphasizes the significance and relevance of the research topic: \
+[{topic}]. Discuss its importance in the broader context and outline the research aims and objectives.”"
+
+        methodology = f"Assess the reliability and validity of the chosen\
+        measurement instruments in the research methodology for [{topic}]."
+        
+        
+        result = f"Illustrate the main outcomes of the research through clear and concise tables, graphs,\
+        or charts for [{topic}]."
+        
+        conclusion = f"Highlight the implications of the study’s findings for future research directions and potential areas of exploration."
+        
+        references = f"Create a reference list following the APA style for the sources cited\
+        in your research paper on [{topic}]."
