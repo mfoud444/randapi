@@ -207,6 +207,10 @@ from .Messages import ListMessagesSerializer
 
 
 class DocumentDownloadView(APIView):
+    
+    
+    def is_tran(lang):
+        return 'ar'
     def build_message(self, data):
         try:
             print("data", data)
@@ -215,10 +219,11 @@ class DocumentDownloadView(APIView):
             message_user_id = data.get("message_user_id", "")
             message_ai_id = data.get("message_ai_id", 0)
             try:
-                conversation = Conversation.objects.filter(id=conversation_id)
+                conversation = Conversation.objects.get(id=conversation_id)
             except Conversation.DoesNotExist:
                 return Response({"error": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
-            print(conversation_id, type_data)
+            lang = conversation.lang.code
+            print("conversation_id", conversation.lang.code)
             if type_data == "conversation":
                 message_user_instances = MessageUser.objects.filter(conversation__id=conversation_id)
 
@@ -230,7 +235,7 @@ class DocumentDownloadView(APIView):
                         data = serializer.data
 
                         user_message = (
-                            data["message_user"]["text"]
+                              '# ' + data["message_user"]["text"].strip()
                             if "message_user" in data
                             else ""
                         )
@@ -238,6 +243,11 @@ class DocumentDownloadView(APIView):
                         assistant_messages = []
                         for i, msg in enumerate(data["message_ai"]):
                             text = msg.get("text", "")
+                            text_tran = msg.get("text_tran_info", "")
+                            if lang != 'en':
+                                for t, text_tran_info  in enumerate(text_tran):
+                                    if lang == text_tran_info.get("code", ""):
+                                        text = text_tran_info.get("text", "")
                             formatted_msg = (
                                 f"Answer-{i}\n" if i > 0 else ""
                             ) + f"\n{text}\n"
@@ -245,27 +255,24 @@ class DocumentDownloadView(APIView):
 
                         all_messages.append(user_message)
                         all_messages.extend(assistant_messages)
-
-                 
                     return "\n".join(all_messages)
+                
             elif type_data == "chat":
-                print("hhhhhhhhhh")
-                print("message_ai_id", message_ai_id)
                 message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id).first()
                 if message_user_instance:
                     serializer = ListMessagesSerializer(message_user_instance)
                     data = serializer.data
-                    user_message = (data["message_user"]["text"] if "message_user" in data else "")
+                    user_message = ('# ' + data["message_user"]["text"].strip() if "message_user" in data else "")
                     user_message += "\n"
                     assistant_message = ""
-                    print("data['message_ai']", data["message_ai"])
                     for i, msg in enumerate(data["message_ai"]):
-                        id = msg.get("id", "")
-                        print("id", id)
-                        assistant_message =msg.get("text", "")
-                        if message_ai_id == id:
-                            print("messsage ooooooooooooooooooooh")
-                            assistant_message =msg.get("text", "")
+                        text = msg.get("text", "")
+                        text_tran = msg.get("text_tran_info", "")
+                        if lang != 'en':
+                            for t, text_tran_info  in enumerate(text_tran):
+                                if lang == text_tran_info.get("code", ""):
+                                    text = text_tran_info.get("text", "")
+                        assistant_message = text
                     return f"{user_message}\n{assistant_message}"
             else:
                 return "No messages found for the given conversation_id"
@@ -282,7 +289,11 @@ class DocumentDownloadView(APIView):
             output_format = serializer.validated_data.get("output_format", "").lower()
             if output_format == "docx":
                 output_file = "output.docx"
-                options = ["--to=docx"]
+                options = [
+                    "--to=docx",
+                     "--variable=mainfont:Amiri",
+                    "--variable=dir:rtl",
+                ]
             elif output_format == "pptx":
                 output_file = "output.pptx"
                 options = ["--to=pptx"]

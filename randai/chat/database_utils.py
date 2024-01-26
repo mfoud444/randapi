@@ -10,6 +10,35 @@ from util.Helper import Helper
 from django.http import Http404
 from util import TextTran
 helper = Helper()
+
+import re
+
+# Function to remove code blocks from Markdown
+def remove_code_blocks(markdown_text):
+    code_block_pattern = re.compile(r'```.*?```', re.DOTALL)
+    return code_block_pattern.sub('__CODE_BLOCK_PLACEHOLDER__', markdown_text)
+
+# Function to translate text and handle code blocks
+def translate_with_code_handling(markdown_text, lang_code, text_tran_user):
+    # Remove code blocks from Markdown
+    text_without_code = remove_code_blocks(markdown_text)
+
+    # Translate the text without code
+    res_translate = TextTran().translate(text_without_code, lang_code)
+
+    if res_translate:
+        # Re-insert code blocks into the translated text
+        translated_text_with_code = insert_code_blocks(res_translate, markdown_text)
+        print("translated_text_with_code", translated_text_with_code)
+    return translated_text_with_code
+
+# Function to insert code blocks back into translated text
+def insert_code_blocks(translated_text, original_text):
+    code_blocks = re.findall(r'```.*?```', original_text, re.DOTALL)
+    for code_block in code_blocks:
+        translated_text = translated_text.replace('__CODE_BLOCK_PLACEHOLDER__', code_block, 1)
+    return translated_text.replace('__CODE_BLOCK_PLACEHOLDER__', '')
+
 def save_data_in_db(valid_request, response, is_image=False):
     try:
         if 'model' not in valid_request:
@@ -99,7 +128,7 @@ def save_data_in_db(valid_request, response, is_image=False):
                     lang_code = valid_request.get('lang', '')
                     text_tran_user = valid_request.get('text_tran_user', '')
                     language_instance = get_object_or_404(Language, code=lang_code)
-                    res_translate  = TextTran().translate(res, valid_request.get('lang',''))
+                    res_translate = translate_with_code_handling(res, valid_request.get('lang',''), text_tran_user)
                     if res_translate:
                         res = res_translate
                         print(f"resdd: {res}")
