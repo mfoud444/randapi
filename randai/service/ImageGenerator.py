@@ -8,7 +8,7 @@ from util.Settings import Settings
 from util.Helper import Helper
 from .ImageGen.SSD1 import SSD1
 from mysupabase import supabase
-from g4ff import g4ff0202, g4ff0203, ImageTextGenerator, ImageTextGenerator4
+# from g4ff import g4ff0202, g4ff0203, ImageTextGenerator, ImageTextGenerator4
 class ImageGenerator:
     def __init__(self, req):
         self.req = req
