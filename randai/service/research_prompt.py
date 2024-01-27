@@ -186,8 +186,8 @@ step_research = {
     "methodology": methodology.get(1),
     "discussion":discussion.get(1),
     "summary":summary.get(1),
-    "result": result.get(1),
+    # "result": result.get(1),
     "conclusion": conclusion.get(1),
-    "future Work":future_work.get(1),
+    # "future Work":future_work.get(1),
     "references": reference.get(1)
 }
