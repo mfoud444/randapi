@@ -10,10 +10,9 @@ from chat.database_utils import save_data_in_db
 from g4ff import g4ff0202, g4ff0203, g4ff0204
 from fp.fp import FreeProxy
 settings = Settings()
-import g4f
 from undetected_chromedriver import Chrome, ChromeOptions
 
-
+from .research_prompt import step_research
 
 class ResearchGen:
     def __init__(self, req):
@@ -25,20 +24,7 @@ class ResearchGen:
         self.completion_timestamp = int(time.time())
         self.webdriver = None 
         self.initialize_request_attributes(req)
-        self.step_research = {
-            "introduction": "Develop an introduction for an academic work that highlights the significance of the provided topic: "
-               "\"Develop an introduction that emphasizes the significance and relevance of the research topic: "
-               "[{topic}]. Discuss its importance in the broader context and outline the research aims and objectives.\"",
-            
-            "methodology": "Assess the reliability and validity of the chosen measurement instruments in the research methodology for [{topic}].",
-            
-            "result": "Illustrate the main outcomes of the research through clear and concise tables, graphs, "
-               "or charts for [{topic}].",
-            
-            "conclusion": "Highlight the implications of the study’s findings for future research directions and potential areas of exploration.",
-            
-            "references": "Create a reference list following the APA style for the sources cited in your research paper on [{topic}]."
-        }
+        self.step_research = step_research
         
 
     def initialize_request_attributes(self, req):
@@ -137,7 +123,7 @@ class ResearchGen:
             while attempts < self.max_attempts:
                 try:
                     response = self.g4f.ChatCompletion.create(**params)
-                    header_step = "\n\n" + "# " + step.strip()  + "\n\n" 
+                    header_step = self.get_title_step(step)
                     completion_data["messageAi"]["text"] += header_step
                     if response is None:
                         raise ValueError("ChatCompletion.create returned None")
@@ -145,7 +131,6 @@ class ResearchGen:
                         if "https://static.cloudflareinsights.com/beacon.min.js/" in chunk:
                             attempts += 1
                             break
-                        res["text"] += chunk
                         step_result += chunk
                         completion_data["messageAi"]["text"] += chunk
                         content = json.dumps(completion_data, separators=(',', ':'))
@@ -194,7 +179,7 @@ class ResearchGen:
                     if response is not None:
                         generated_results[step] = response
                         params['messages'] += [{"role": "assistant", "content": response}]
-                        final_result += "# " + step.strip() + " <br>" + "\n\n" 
+                        final_result += self.get_title_step(step)
                         final_result += response.strip() + " <br>" + "\n\n" 
                         break  
                     else:
@@ -209,3 +194,6 @@ class ResearchGen:
                     else:
                         raise  
         return {'text': final_result}
+
+    def get_title_step(self, step:str):
+        return "\n\n" + "# " + step.strip().capitalize()  + "\n\n" 

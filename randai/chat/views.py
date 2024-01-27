@@ -143,7 +143,7 @@ class ChatAPIView(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         )
                 elif is_research:
-                    helper_instance = HelperChatText(serializer.validated_data)
+                    helper_instance = HelperChatText(serializer.validated_data,False,True)
                     valid_request = helper_instance.build_valid_request()
                     object_chat = ResearchGen(valid_request)
                     print("valid_request", valid_request)

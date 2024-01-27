@@ -20,10 +20,11 @@ from chat.Messages import MessageUser , ListMessagesSerializer
 settings = Settings()
 
 class HelperChatText:
-    def __init__(self, user_req,  is_image=False):
+    def __init__(self, user_req,  is_image=False , is_research = False):
         self.user_req = user_req
         self.validate_req = {}
         self.is_image = is_image
+        self.is_research = is_research
 
     def build_valid_request(self):
         self.initialize_valid_request()
@@ -37,6 +38,10 @@ class HelperChatText:
             if self.validate_req['text_tran_user'] is None:
                  self.translate()
             # self.validate_req['model'] = 'SSD-1B'
+            self.validate_req['type'] = 'image'
+        if self.is_research:
+            self.validate_req['type'] = 'research'
+            
         if self.validate_req['image_path']:
             self.validate_req['image_uri'] = self.image_path_to_data_uri(self.validate_req['image_path'])
         
@@ -62,6 +67,7 @@ class HelperChatText:
             'is_web_search':self.user_req.get('is_web_search', False),
             'image_path':self.user_req.get('image', ''),
             'image_uri':'',
+            'type':'text',
         }
 
     def set_conversation(self):

@@ -26,7 +26,7 @@ def save_data_in_db(valid_request, response, is_image=False):
                 'id':valid_request['conversation_id'],
                 'user_id': valid_request['user_id'],
                 'lang': language_instance,
-                'type': 'image' if is_image else 'text',
+                'type': valid_request.get('type', 'text'),
                 'model': model_instance,
                 'title': valid_request['prompt'][:50],
                 'is_pin': False,
