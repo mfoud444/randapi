@@ -58,12 +58,12 @@ class ChatText:
         self.conversation_id = req.get('conversation_id', str(uuid.uuid4()))
 
     def gen_text(self):
-        res = self.generate_research(self.valid_request['prompt'])
+        # res = self.generate_research(self.valid_request['prompt'])
         
-        # if self.stream:
-        #     res = self.create_stream_response()
-        # else:
-        #     res = self.create_non_stream_response()
+        if self.stream:
+            res = self.create_stream_response()
+        else:
+            res = self.create_non_stream_response()
         return res
 
     def generate_response(self):
