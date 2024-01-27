@@ -12,15 +12,13 @@ from deep_translator import GoogleTranslator
 #         print(translate_text)
 
 def translate_google_deep(prompt: str, dest: str = 'en'):
-    # Check if the input prompt is within the allowed length
-    if 0 <= len(prompt) <= 5000:
+    max_char = 4900
+    if 0 <= len(prompt) <= max_char:
         translate_text = GoogleTranslator(source='auto', target=dest).translate(prompt)
         return translate_text
-    elif len(prompt) > 5000:
-        # If the input prompt is too long, split it into chunks and translate each chunk
-        chunks = [prompt[i:i+5000] for i in range(0, len(prompt), 5000)]
+    elif len(prompt) > max_char:
+        chunks = [prompt[i:i+max_char] for i in range(0, len(prompt), max_char)]
         translated_chunks = [GoogleTranslator(source='auto', target=dest).translate(chunk) for chunk in chunks]
         return ''.join(translated_chunks)
     else:
-        # Handle the case where the input prompt is empty or negative length
-        return "Input prompt length should be between 0 and 5000 characters."
+        return f"Input prompt length should be between 0 and {max_char} characters."

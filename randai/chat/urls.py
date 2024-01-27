@@ -7,6 +7,7 @@ from .Messages import ListMessagesAPIViewSet
 from .Images import  ListImageAIAPIViewSet
 from .ModelsAi import  ListModelAPIViewSet
 from .Conversation import delete_conversation
+
 router = routers.DefaultRouter()
 router.register(r'api-option', ApiOptionViewSet)
 router.register(r'api-keys', ApiKeyViewSet)
@@ -29,9 +30,11 @@ urlpatterns = [
     # path('models/', ListModelAIAPIView.as_view(), name='list-models'),
     # path('messages/', ListMessagesAPIViewSet.as_view(), name='messages'),
     path('chat/image', ChatImageAPIView.as_view(), name='chat-image'),
+     path('chat/research', ChatResearchAPIView.as_view(), name='chat-research'),
     path('get-image/', GetImageView.as_view(), name='get-image'),
     path('doc/file/', DocumentDownloadView.as_view(), name='file'),
     path('delete-conversation/<uuid:user_id>/<str:type>/', delete_conversation,
          name='delete_conversation'),
+    path('translate/', translate_text, name='translate-text'),
 ]
 

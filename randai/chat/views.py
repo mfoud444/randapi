@@ -12,10 +12,12 @@ from .serializers import *
 from rest_framework import viewsets
 from .Helper.HelperChatText import HelperChatText
 from .Conversation import Conversation
-from service import ChatText, ImageGenerator
+from service import ChatText, ImageGenerator, ResearchGen
 from django.http import StreamingHttpResponse, HttpResponse
 from util import TextTran, Settings, PandocConverter
 from chat.ModelsAi import ModelAI, ModelAISerializer
+from rest_framework.decorators import api_view
+
 from chat.Messages import (
     MessageUser,
     MessageAI,
@@ -113,7 +115,7 @@ class MessageAIAPIViewSet(viewsets.ModelViewSet):
 
 
 class ChatAPIView(APIView):
-    def handle_request(self, request, is_image):
+    def handle_request(self, request, is_image, is_research):
         try:
             data = request.data
             serializer = ChatTextSerializer(data=data)
@@ -140,6 +142,23 @@ class ChatAPIView(APIView):
                             {"error": "Error processing image request."},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         )
+                elif is_research:
+                    helper_instance = HelperChatText(serializer.validated_data)
+                    valid_request = helper_instance.build_valid_request()
+                    object_chat = ResearchGen(valid_request)
+                    print("valid_request", valid_request)
+
+                    if valid_request.get("is_stream", False):
+                        return StreamingHttpResponse(
+                            object_chat.create_stream_response(),
+                            content_type="text/event-stream",
+                        )
+                    else:
+                        response = object_chat.gen_text()
+                        print("valid_request", valid_request)
+                        print("response", response)
+                        res = save_data_in_db(valid_request, response)
+                        return Response(res, status=status.HTTP_200_OK)
                 else:
                     helper_instance = HelperChatText(serializer.validated_data)
                     valid_request = helper_instance.build_valid_request()
@@ -174,15 +193,17 @@ class ChatAPIView(APIView):
 
 class ChatTextAPIView(ChatAPIView):
     def post(self, request, *args, **kwargs):
-        return self.handle_request(request, is_image=False)
+        return self.handle_request(request, is_image=False,  is_research= False)
 
 
 class ChatImageAPIView(ChatAPIView):
     def post(self, request, *args, **kwargs):
-        print("serializer.validated_data")
-        return self.handle_request(request, is_image=True)
+        return self.handle_request(request, is_image=True, is_research= False)
 
 
+class ChatResearchAPIView(ChatAPIView):
+    def post(self, request, *args, **kwargs):
+        return self.handle_request(request, is_image=False, is_research= True)
 class GetImageView(APIView):
     def get(self, request, *args, **kwargs):
         try:
@@ -319,3 +340,20 @@ class DocumentDownloadView(APIView):
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+
+
+@api_view(['POST'])
+def translate_text(request):
+    if 'text' not in request.data or 'dest' not in request.data:
+        return Response({'error': 'Both "text" and "dest" parameters are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    text = request.data['text']
+    dest = request.data['dest']
+
+    try:
+        translation_result = TextTran().translate(text, dest)
+        return Response({'result': translation_result}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

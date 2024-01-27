@@ -15,7 +15,7 @@ from undetected_chromedriver import Chrome, ChromeOptions
 
 
 
-class ChatText:
+class ResearchGen:
     def __init__(self, req):
         self.g4f = g4f
         self.valid_request = req
@@ -58,12 +58,10 @@ class ChatText:
         self.conversation_id = req.get('conversation_id', str(uuid.uuid4()))
 
     def gen_text(self):
-        res = self.generate_research(self.valid_request['prompt'])
-        
-        # if self.stream:
-        #     res = self.create_stream_response()
-        # else:
-        #     res = self.create_non_stream_response()
+        if self.stream:
+            res = self.create_stream_response()
+        else:
+            res = self.create_non_stream_response()
         return res
 
     def generate_response(self):
@@ -116,9 +114,7 @@ class ChatText:
         print("params", params)
         return params
 
-    def create_non_stream_response(self):
-        response = self.generate_response()
-        return {'text': response}
+
 
     def create_stream_response(self):
         attempts = 0
@@ -128,52 +124,72 @@ class ChatText:
             "messageUser": {"id": 1},
             "messageAi": {"id": 1, "text": "", "loading": True},
         }
-        while attempts < self.max_attempts:
-            try:
-                params = self.prepare_params()
-                response = self.g4f.ChatCompletion.create(**params)
-                if response is None:
-                    raise ValueError("ChatCompletion.create returned None")
-                for chunk in response:
-                    if "https://static.cloudflareinsights.com/beacon.min.js/" in chunk:
-                        attempts += 1
-                        break
-                    res["text"] += chunk
-                    completion_data["messageAi"]["text"] = chunk
-                    content = json.dumps(completion_data, separators=(',', ':'))
-                    print(completion_data)
-                    yield f'{content} \n'
+        topic = self.valid_request['prompt']
+        res["text"] = ""
+        generated_results = {}
+        params = self.prepare_params()
+        params['messages'] = []
+        for step, prompt_template in self.step_research.items():
+            prompt = prompt_template.format(topic=topic)
+            params['messages'] += [{"role": "user", "content": prompt}]
+            print("========i am fuck ==========>",step )
+            step_result = ""
+            while attempts < self.max_attempts:
+                try:
+                    response = self.g4f.ChatCompletion.create(**params)
+                    header_step = "\n\n" + "# " + step.strip()  + "\n\n" 
+                    completion_data["messageAi"]["text"] += header_step
+                    if response is None:
+                        raise ValueError("ChatCompletion.create returned None")
+                    for chunk in response:
+                        if "https://static.cloudflareinsights.com/beacon.min.js/" in chunk:
+                            attempts += 1
+                            break
+                        res["text"] += chunk
+                        step_result += chunk
+                        completion_data["messageAi"]["text"] += chunk
+                        content = json.dumps(completion_data, separators=(',', ':'))
+                        print(completion_data)
+                        completion_data["messageAi"]["text"] = ""
+                        yield f'{content} \n'
 
-                saved_end_data = save_data_in_db(self.valid_request, res)
-                saved_end_data["messageAi"]["text"] = ""
-                content = json.dumps(saved_end_data, separators=(',', ':'))
-                yield f'{content} \n'
-                break
-            except (RuntimeError, Exception) as e:
-                print(f"Error {e}")
-                print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
-                attempts += 1
-                continue
-            finally:
-                if self.webdriver:
-                    self.webdriver.quit() 
+                    
+                    generated_results[step] = step_result.strip()
+                    params['messages'] += [{"role": "assistant", "content": step_result.strip()}]
+                    res["text"] += header_step
+                    res["text"] += step_result.strip() + " <br>" + "\n\n" 
+                    break
+                except (RuntimeError, Exception) as e:
+                    print(f"Error {e}")
+                    print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
+                    attempts += 1
+                    continue
+                finally:
+                    if self.webdriver:
+                        self.webdriver.quit() 
+        saved_end_data = save_data_in_db(self.valid_request, res)
+        saved_end_data["messageAi"]["text"] = ""
+        content = json.dumps(saved_end_data, separators=(',', ':'))
+        yield f'{content} \n'
 
 
 
-    def generate_research(self, topic):
+
+    def create_non_stream_response(self):
+        topic = self.valid_request['prompt']
         generated_results = {}
         params = self.prepare_params()
         params['messages'] = []
         params["stream"] = False
-        final_result = ""  # Initialize an empty string to store the final result
+        final_result = "" 
 
         for step, prompt_template in self.step_research.items():
+            prompt = prompt_template.format(topic=topic)
+            params['messages'] += [{"role": "user", "content": prompt}]
             retries = 0
+            print("========i am fuck ==========>",step )
             while retries < self.max_retries:
                 try:
-                    print("=============>" + step + '\n') 
-                    prompt = prompt_template.format(topic=topic)
-                    params['messages'] += [{"role": "user", "content": prompt}]
                     response = self.g4f.ChatCompletion.create(**params)
                     if response is not None:
                         generated_results[step] = response
@@ -192,4 +208,4 @@ class ChatText:
                         retries += 1
                     else:
                         raise  
-        return {'text': final_result.strip()}
+        return {'text': final_result}

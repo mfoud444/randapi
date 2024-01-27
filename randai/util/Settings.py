@@ -28,6 +28,7 @@ class Settings:
     TYPE_CHOICES = [
         ('text', 'Text'),
         ('image', 'Image'),
+         ('research', 'Research'),
     ]
     TYPE_PRICE = [
         ('free', 'Free'),
