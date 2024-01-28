@@ -89,12 +89,23 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'postgres',
+        'USER': 'postgres.pjbfqckvgnmgjplesxod',
         'PASSWORD': '009988Ppooii@@',
-        'HOST': 'db.pjbfqckvgnmgjplesxod.supabase.co',
-        'PORT': '5432',
+        'HOST': 'aws-0-us-west-1.pooler.supabase.com',
+        'PORT': '6543',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': '009988Ppooii@@',
+#         'HOST': 'db.pjbfqckvgnmgjplesxod.supabase.co',
+#         'PORT': '5432',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
