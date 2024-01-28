@@ -98,7 +98,7 @@ class ResearchGen(BaseGenerator):
                         generated_results[step] = response
                         params['messages'] += [{"role": "assistant", "content": response}]
                         final_result += self.get_title_step(step)
-                        final_result += response.strip() + " <br>" + "\n\n" 
+                        final_result += response.strip()  + "\n\n" 
                         break  
                     else:
                         print(f"Received None response for step {step}. Retrying...")
