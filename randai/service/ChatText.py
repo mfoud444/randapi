@@ -23,11 +23,11 @@ class ChatText(BaseGenerator):
             try:
                 params = self.prepare_params()
                 response = self.g4f.ChatCompletion.create(**params)
-                if response is not None:
-                    return response
-                else:
+                if response is None:
                     print("Received None response. Retrying...")
                     retries += 1
+                else:
+                    break
 
             except (RuntimeError, Exception) as e:
                 print(f"Error during generate:")

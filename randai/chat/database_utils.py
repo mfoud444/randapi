@@ -13,6 +13,7 @@ helper = Helper()
 
 def save_data_in_db(valid_request, response, is_image=False):
     try:
+        
         if 'model' not in valid_request:
             raise KeyError("'model' key not found in valid_request")
 
@@ -75,6 +76,9 @@ def save_data_in_db(valid_request, response, is_image=False):
                               model_instance_image],
             }
         else:
+            
+            res = response.get('text', '')
+            print("hhhhhhhhhhhhh")
             data = {
                 'text': response.get('text', ''),
                 'model': model_instance,
@@ -95,6 +99,7 @@ def save_data_in_db(valid_request, response, is_image=False):
                 }
                 message_user = MessageUser.objects.create(**message_user_data)
             message_user.message_ai.add(message_message_ai_text)
+           
             res = response.get('text', '')
             if valid_request.get('is_tran', False):
                     lang_code = valid_request.get('lang', '')
