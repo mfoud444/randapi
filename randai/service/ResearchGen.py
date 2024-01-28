@@ -69,6 +69,7 @@ class ResearchGen(BaseGenerator):
                 finally:
                     if self.webdriver:
                         self.webdriver.quit() 
+     
         saved_end_data = save_data_in_db(self.valid_request, res)
         saved_end_data["messageAi"]["text"] = ""
         content = json.dumps(saved_end_data, separators=(',', ':'))

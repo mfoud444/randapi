@@ -76,7 +76,7 @@ def save_data_in_db(valid_request, response, is_image=False):
                               model_instance_image],
             }
         else:
-            
+            print("================================================22222222222===============================================")
             res = response.get('text', '')
             print("hhhhhhhhhhhhh")
             data = {
