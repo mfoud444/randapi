@@ -333,12 +333,12 @@ def get_step_research(lang):
     step_research = {
         "introduction": research_prompt[lang]["introduction"].get(8, 8),
         # "methodology": research_prompt[lang]["methodology"][1],
-        "discussion": research_prompt[lang]["discussion"].get(10, 10),
-        "summary": research_prompt[lang]["summary"].get(5, 5),
+        # "discussion": research_prompt[lang]["discussion"].get(10, 10),
+        # "summary": research_prompt[lang]["summary"].get(5, 5),
         # "result": result[1],
         "conclusion": research_prompt[lang]["conclusion"].get(8, 8),
         # "future Work":future_work[1],
-        "references": research_prompt[lang]["reference"].get(1, 1),
+        # "references": research_prompt[lang]["reference"].get(1, 1),
     }
     return step_research
 
