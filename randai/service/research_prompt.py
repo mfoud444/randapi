@@ -332,12 +332,12 @@ research_prompt = {
 def get_step_research(lang):
     step_research = {
         "introduction": research_prompt[lang]["introduction"].get(8, 8),
-        # "methodology": research_prompt[lang]["methodology"][1],
+        "methodology": research_prompt[lang]["methodology"].get(19, 19),
         "discussion": research_prompt[lang]["discussion"].get(10, 10),
         "summary": research_prompt[lang]["summary"].get(5, 5),
-        # "result": result[1],
+        "result": research_prompt[lang]["result"].get(5, 5),
         "conclusion": research_prompt[lang]["conclusion"].get(8, 8),
-        # "future Work":future_work[1],
+         "future_work":research_prompt[lang]["future_work"].get(9, 9), 
         "references": research_prompt[lang]["reference"].get(1, 1),
     }
     return step_research
@@ -349,6 +349,8 @@ def get_title(key, lang= 'en'):
             "methodology": "Methodology",
             "discussion": "Discussion",
             "summary": "Summary",
+            "result":"Result",
+            "future_work":"Future Work",
             "conclusion": "Conclusion",
             "references": "References",
         },
@@ -357,6 +359,8 @@ def get_title(key, lang= 'en'):
             "methodology": "المنهجية",
             "discussion": "المناقشة",
             "summary": "الملخص",
+              "result":"النتائج",
+            "future_work":"الأعمال المستقبلية",
             "conclusion": "الخاتمة",
             "references": "المراجع",
         },

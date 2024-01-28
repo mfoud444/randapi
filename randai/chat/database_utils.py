@@ -13,7 +13,6 @@ helper = Helper()
 
 def save_data_in_db(valid_request, response, is_image=False):
     try:
-        print("==========================================================================================================")
         if 'model' not in valid_request:
             raise KeyError("'model' key not found in valid_request")
 
@@ -76,9 +75,7 @@ def save_data_in_db(valid_request, response, is_image=False):
                               model_instance_image],
             }
         else:
-            print("================================================22222222222===============================================")
             res = response.get('text', '')
-            print("hhhhhhhhhhhhh")
             data = {
                 'text': response.get('text', ''),
                 'model': model_instance,
