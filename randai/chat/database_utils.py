@@ -13,7 +13,7 @@ helper = Helper()
 
 def save_data_in_db(valid_request, response, is_image=False):
     try:
-        
+        print("==========================================================================================================")
         if 'model' not in valid_request:
             raise KeyError("'model' key not found in valid_request")
 
