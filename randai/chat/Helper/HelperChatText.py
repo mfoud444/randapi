@@ -76,7 +76,7 @@ class HelperChatText:
             existing_conversation = Conversation.objects.filter(id=conversation_id).first()
             if existing_conversation:
                 self.validate_req['conv'] = existing_conversation
-                if not self.is_image:
+                if not self.is_image or not self.is_research:
                     self.validate_req['message'] += self.build_message(conversation_id)
         else:
             self.validate_req['conversation_id']  =  str(uuid.uuid4())
@@ -157,13 +157,9 @@ class HelperChatText:
             "is_stream": default_model.get('is_stream', False),
             "languages": default_model['lang']
         })
-
-
-    def genertion_title(self):
-        return 
     
     def translate(self):
-         self.validate_req['text_tran_user'] = TextTran().translate(self.user_req['prompt'], 'en')
+         self.validate_req['text_tran_user'] = TextTran().translate_without_code(self.user_req['prompt'], 'en')
          
     def build_message(self, conversation_id):
         try:
@@ -212,28 +208,15 @@ class HelperChatText:
 
     def image_path_to_data_uri(self, image_path):
         try:
-            # Construct the full URL
             supabase_url_file = 'https://fvpmikdmeystnnxnloqe.supabase.co/storage/v1/object/public/chat-text/' + image_path
             print(supabase_url_file)
-
-            # Make an HTTP request to get the image content
             response = requests.get(supabase_url_file)
-
-            # Check if the request was successful (status code 200)
             if response.status_code == 200:
-                # Read the image content
                 image_data = response.content
-
-                # Encode the image data in base64
                 base64_encoded_image = base64.b64encode(image_data).decode("utf-8")
-
-                # Determine the image format based on the file extension
                 file_extension = image_path.split(".")[-1]
                 image_format = "jpeg" if file_extension.lower() == "jpg" else file_extension.lower()
-
-                # Construct the data URI
                 data_uri = f"data:image/{image_format};base64,{base64_encoded_image}"
-
                 return data_uri
             else:
                 print(f"Failed to fetch image. Status code: {response.status_code}")
@@ -241,21 +224,3 @@ class HelperChatText:
         except Exception as e:
             print(f"Error converting image to data URI: {e}")
             return None
-
-
-    def build_prompt_research(self,topic):
-        introduction = f"Develop an introduction for an academic work that highlights the significance of the provided topic:\
-“Develop an introduction that emphasizes the significance and relevance of the research topic: \
-[{topic}]. Discuss its importance in the broader context and outline the research aims and objectives.”"
-
-        methodology = f"Assess the reliability and validity of the chosen\
-        measurement instruments in the research methodology for [{topic}]."
-        
-        
-        result = f"Illustrate the main outcomes of the research through clear and concise tables, graphs,\
-        or charts for [{topic}]."
-        
-        conclusion = f"Highlight the implications of the study’s findings for future research directions and potential areas of exploration."
-        
-        references = f"Create a reference list following the APA style for the sources cited\
-        in your research paper on [{topic}]."
