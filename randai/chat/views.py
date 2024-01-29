@@ -336,7 +336,7 @@ class DocumentDownloadView(APIView):
                 options = [
                     "--to=docx",
                     "--variable=mainfont:Amiri",
-                    "--variable=dir:rtl",
+                  
                 ]
             elif output_format == "pptx":
                 output_file = "output.pptx"
