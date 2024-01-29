@@ -343,14 +343,22 @@ class DocumentDownloadView(APIView):
                 options = ["--to=pptx"]
             else:
                 output_file = "output.pdf"
-                yaml_metadata_block = f"""
----
-title: {str(conversation.title)}
-author: [Rand AI]
-date: {str(conversation.created_at)}
-lang: "{conversation.lang.code}"
+#                 yaml_metadata_block = f"""
+# ---
+# title: {str(conversation.title)}
+# author: [Rand AI]
+# date: {str(conversation.created_at)}
+# lang: "{conversation.lang.code}"
+# ...
+            yaml_metadata_block = """
+          ---
+title: "Example PDF"
+author: [Author]
+date: "2017-02-20"
+subject: "Markdown"
+keywords: [Markdown, Example]
+lang: "en"
 ...
-
 """
                 print(yaml_metadata_block)
                 options = [
