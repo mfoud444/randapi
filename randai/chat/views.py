@@ -349,6 +349,7 @@ title: {str(conversation.title)}
 author: [Rand AI]
 date: {str(conversation.created_at)}
 lang: "{conversation.lang.code}"
+titlepage: true
 ...
 """
                 
@@ -360,11 +361,10 @@ lang: "{conversation.lang.code}"
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                     "--variable=mainfont:Amiri",
                 ]
-            #    "--variable=lang:ar",
-            #    "--variable=dir:rtl",
+
 
             final_text = f"{yaml_metadata_block}{text_markdown}"
-            pandoc_converter = PandocConverter(final_text, output_file, options)
+            pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)
             response = FileResponse(open(file_path, "rb"))
