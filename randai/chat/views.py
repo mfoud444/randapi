@@ -154,11 +154,15 @@ class ChatAPIView(APIView):
                             content_type="text/event-stream",
                         )
                     else:
-                        response = object_chat.gen_text()
-                        print("valid_request", valid_request)
-                        print("response", response)
-                        res = save_data_in_db(valid_request, response)
-                        return Response(res, status=status.HTTP_200_OK)
+                        return StreamingHttpResponse(
+                            object_chat.create_non_stream_response(),
+                            content_type="text/event-stream",
+                        )
+                        # response = object_chat.gen_text()
+                        # print("valid_request", valid_request)
+                        # print("response", response)
+                        # res = save_data_in_db(valid_request, response)
+                        # return Response(res, status=status.HTTP_200_OK)
                 else:
                     helper_instance = HelperChatText(serializer.validated_data)
                     valid_request = helper_instance.build_valid_request()

@@ -3,6 +3,7 @@ import time
 import random
 import uuid 
 import string
+import concurrent.futures
 from typing import List
 import g4f
 from util import TextTran, Settings
@@ -10,15 +11,30 @@ from chat.database_utils import save_data_in_db
 # from g4ff import g4ff0202, g4ff0203, g4ff0204
 from fp.fp import FreeProxy
 settings = Settings()
+import asyncio
 from undetected_chromedriver import Chrome, ChromeOptions
-
+from util import TextTran
 from .research_prompt import get_step_research , get_title
 from .BaseGenerator import BaseGenerator
 class ResearchGen(BaseGenerator):
     def __init__(self, req):
         super().__init__(req)
-        self.step_research = get_step_research(self.lang)
-
+        
+        if self.valid_request['is_tran']:
+          
+            self.topic = self.valid_request['text_tran_user']
+            
+            self.step_research = get_step_research('en')
+        else:
+          
+            self.topic = self.valid_request['prompt']
+            self.step_research = get_step_research(self.lang)
+        
+    def get_title_step(self, step: str, lang=None):
+        if lang is None:
+            lang = self.lang
+        return "\n\n" + "# " + get_title(step.strip(), lang).capitalize() + "\n\n"
+    
     def create_stream_response(self):
         attempts = 0
         res = {"text": ''}
@@ -27,13 +43,13 @@ class ResearchGen(BaseGenerator):
             "messageUser": {"id": 1},
             "messageAi": {"id": 1, "text": "", "loading": True},
         }
-        topic = self.valid_request['prompt']
+        
         res["text"] = ""
         generated_results = {}
         params = self.prepare_params()
         params['messages'] = []
         for step, prompt_template in self.step_research.items():
-            prompt = prompt_template.format(topic=topic)
+            prompt = prompt_template.format(topic=self.topic)
             params['messages'] += [{"role": "user", "content": prompt}]
             print("========i am fuck ==========>",step )
             step_result = ""
@@ -76,30 +92,63 @@ class ResearchGen(BaseGenerator):
         yield f'{content} \n'
 
 
-
-
     def create_non_stream_response(self):
-        topic = self.valid_request['prompt']
         generated_results = {}
+        completion_data = {
+            "conversation": {"id": str(self.conversation_id), "title": ""},
+            "messageUser": {"id": 1},
+            "messageAi": {"id": 1, "text": "", "loading": True},
+        }
         params = self.prepare_params()
         params['messages'] = []
         params["stream"] = False
-        final_result = "" 
+        text_results = "" 
+        tran_text_results = ""
+        lang = self.lang
+        
+        if self.is_tran:
+            lang = 'en'
+            
 
         for step, prompt_template in self.step_research.items():
-            prompt = prompt_template.format(topic=topic)
+            if self.is_tran:
+                header_step = self.get_title_step(step, self.lang)
+            else:
+                header_step = self.get_title_step(step)
+            print(self.topic) 
+            prompt = prompt_template.format(topic=self.topic)
+            print(prompt)
             params['messages'] += [{"role": "user", "content": prompt}]
             retries = 0
             print("========i am fuck ==========>",step )
+            
+            completion_data["messageAi"]["text"] += header_step
+            content = json.dumps(completion_data, separators=(',', ':'))
+            yield f'{content} \n'
             while retries < self.max_retries:
                 try:
                     response = self.g4f.ChatCompletion.create(**params)
                     if response is not None:
+                        if "mlc::llm::LLMChatModule::GetFunction" in response:
+                            retries += 1
+                            break
                         generated_results[step] = response
                         params['messages'] += [{"role": "assistant", "content": response}]
-                        final_result += self.get_title_step(step)
-                        final_result += response.strip()  + "\n\n" 
-                        break  
+                        
+                        completion_data["messageAi"]["text"] = response
+                        
+                        text_results += header_step
+                        text_results += response.strip()  + "\n\n"
+                        if self.is_tran:
+                            response_tran  = TextTran().translate_without_code(response, self.lang).strip() + "\n\n"
+                            completion_data["messageAi"]["text"] = response_tran
+                            tran_text_results += header_step
+                            tran_text_results += response_tran
+                            print("tran_text_results", tran_text_results)
+                        content = json.dumps(completion_data, separators=(',', ':'))
+                        yield f'{content} \n'
+                        completion_data["messageAi"]["text"] = ""
+                        break 
                     else:
                         print(f"Received None response for step {step}. Retrying...")
                         retries += 1
@@ -111,7 +160,64 @@ class ResearchGen(BaseGenerator):
                         retries += 1
                     else:
                         raise  
-        return {'text': final_result}
+        saved_end_data = save_data_in_db(self.valid_request, {'text': text_results , 'text_tran':tran_text_results})
+        saved_end_data["messageAi"]["text"] = ""
+        content = json.dumps(saved_end_data, separators=(',', ':'))
+        yield f'{content} \n'
 
-    def get_title_step(self, step:str):
-        return "\n\n" + "# " + get_title(step.strip(), self.lang).capitalize()  + "\n\n" 
+
+
+    # async def generate_step(step, prompt, params, text_results, tran_text_results, lang, is_tran):
+    #     params['messages'] += [{"role": "user", "content": prompt}]
+    #     retries = 0
+    #     print("========i am  ==========>", step)
+    #     while retries < self.max_retries:
+    #         try:
+    #             response = await self.g4f.ChatCompletion.create(**params)
+    #             if response is not None:
+    #                 generated_results[step] = response
+    #                 params['messages'] += [{"role": "assistant", "content": response}]
+    #                 text_results += self.get_title_step(step, lang)
+    #                 text_results += response.strip() + "\n\n"
+    #                 if is_tran:
+    #                     tran_text_results += self.get_title_step(step)
+    #                     tran_text_results += TextTran().translate_without_code(response, self.lang).strip() + "\n\n"
+    #                     print("tran_text_results", tran_text_results)
+    #                 break
+    #             else:
+    #                 print(f"Received None response for step {step}. Retrying...")
+    #                 retries += 1
+
+    #         except (RuntimeError, Exception) as e:
+    #             print(f"Error during generate for step {step}: {str(e)}")
+    #             if retries < self.max_retries - 1:
+    #                 print(f"Retrying... Attempt {retries + 2}/{self.max_retries}")
+    #                 retries += 1
+    #             else:
+    #                 raise
+                
+    # async def create_non_stream_response(self):
+    #     self.topic = self.valid_request['prompt']
+    #     generated_results = {}
+    #     params = self.prepare_params()
+    #     params['messages'] = []
+    #     params["stream"] = False
+    #     text_results = ""
+    #     tran_text_results = ""
+    #     lang = self.lang
+    #     if self.is_tran:
+    #         lang = 'en'
+
+    #     tasks = []
+    #     for step, prompt_template in self.step_research.items():
+    #         prompt = prompt_template.format(topic=topic)
+    #         task = generate_step(step, prompt, params, text_results, tran_text_results, lang, self.is_tran)
+    #         tasks.append(task)
+
+    #     await asyncio.gather(*tasks)
+
+    #     return {'text': text_results, 'text_tran': tran_text_results}
+    
+    
+    
+

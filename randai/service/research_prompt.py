@@ -329,18 +329,23 @@ research_prompt = {
 }
 
 
+
+warning = {
+    "en":" Note: (Start your answering directly without welcome, warning, notes, or warning or word sure. I just want to answer the question, without any side talk)",
+    "ar":" ملاحظة: (إبدا بالإجابة مباشرة بدون ترحيب أو تحذير أو ملاحظات ، أو تنبيه، أريد الإجابة عن السؤال فقط ، بدون إي كلام جانبي)"
+}
 def get_step_research(lang):
     step_research = {
-        "introduction": research_prompt[lang]["introduction"].get(8, 8),
-        "methodology": research_prompt[lang]["methodology"].get(19, 19),
-        "discussion": research_prompt[lang]["discussion"].get(10, 10),
-        "summary": research_prompt[lang]["summary"].get(5, 5),
-        "result": research_prompt[lang]["result"].get(5, 5),
-        "conclusion": research_prompt[lang]["conclusion"].get(8, 8),
-         "future_work":research_prompt[lang]["future_work"].get(9, 9), 
-        "references": research_prompt[lang]["reference"].get(1, 1),
+        "introduction": research_prompt[lang]["introduction"].get(8, 8) + warning[lang],
+        "methodology": research_prompt[lang]["methodology"].get(19, 19) + warning[lang],
+        "discussion": research_prompt[lang]["discussion"].get(10, 10) + warning[lang],
+        "summary": research_prompt[lang]["summary"].get(5, 5) + warning[lang],
+        "result": research_prompt[lang]["result"].get(5, 5) + warning[lang],
+        "conclusion": research_prompt[lang]["conclusion"].get(8, 8)+ warning[lang],
+         "future_work":research_prompt[lang]["future_work"].get(9, 9) + warning[lang], 
+        "references": research_prompt[lang]["reference"].get(1, 1) + warning[lang],
     }
-    return step_research
+    return step_research 
 
 def get_title(key, lang= 'en'):
     step_tran = {
@@ -368,6 +373,7 @@ def get_title(key, lang= 'en'):
     
     # Ensure the provided language is in lowercase
     lang = lang.lower()
+    print(lang)
     
     # If the language and key are present, return the translated title
     if lang in step_tran and key in step_tran[lang]:

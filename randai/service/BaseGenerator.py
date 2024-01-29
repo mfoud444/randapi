@@ -9,7 +9,7 @@ from util import TextTran, Settings
 from chat.database_utils import save_data_in_db
 from fp.fp import FreeProxy
 from undetected_chromedriver import Chrome, ChromeOptions
-
+from g4ff import g4ff0202, g4ff0203, g4ff0204
 settings = Settings()
 
 class BaseGenerator:
@@ -32,7 +32,7 @@ class BaseGenerator:
         self.message = req.get('message', [{"role": "user", "content": "Hello"}])
         self.timeout = req.get('timeout', settings.timeout_chat)
         self.proxy = req.get('proxy', settings.default_proxy)
-        self.is_tran_req = req.get('is_tran_req', False)
+        self.is_tran = req.get('is_tran', False)
         self.is_tran_res = req.get('is_tran_res', False)
         self.lang = req.get('lang', '')
         self.is_web_search = req.get('is_web_search', False)
@@ -55,13 +55,14 @@ class BaseGenerator:
             "stream": self.stream,
         }
         if self.model == 'llama2-70b':
+            self.g4f = g4ff0204
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
             # params["provider"] = 'Bing'
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
-            self.g4f = g4f
+            self.g4f = g4ff0202
             # options = ChromeOptions()
             # options.add_argument("--incognito")
             # self.webdriver = Chrome(options=options, headless=True, version_main = 120)
@@ -73,8 +74,9 @@ class BaseGenerator:
         if self.image:
             params["image"] = self.image
             
-        # if self.model == 'mixtral-8x7b':
-        #     params["provider"] = 'huggingface'
+        if self.model == 'mixtral-8x7b':
+            self.g4f = g4ff0204
+            # params["provider"] = 'huggingface'
         print("params", params)
         return params
 

@@ -70,7 +70,7 @@ class ChatCompletion:
                ignore_stream_and_auth: bool = False,
                patch_provider: callable = None,
                **kwargs) -> Union[CreateResult, str]:
-        
+        print("0202")
         model, provider = get_model_and_provider(model, provider, stream, ignored, ignore_working, ignore_stream_and_auth)
 
         if not ignore_stream_and_auth and provider.needs_auth and not auth:

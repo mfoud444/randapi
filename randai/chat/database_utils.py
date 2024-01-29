@@ -102,7 +102,11 @@ def save_data_in_db(valid_request, response, is_image=False):
                     lang_code = valid_request.get('lang', '')
                     text_tran_user = valid_request.get('text_tran_user', '')
                     language_instance = get_object_or_404(Language, code=lang_code)
-                    res_translate = TextTran().translate_without_code(res, valid_request.get('lang',''))
+                    if response.get('text_tran', None):
+                        res_translate = response['text_tran']
+                        print("None translate Again")
+                    else:   
+                        res_translate = TextTran().translate_without_code(res, valid_request.get('lang',''))
                     if res_translate:
                         res = res_translate
                         # print(f"resdd: {res}")
