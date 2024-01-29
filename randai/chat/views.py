@@ -280,7 +280,7 @@ class DocumentDownloadView(APIView):
 
                         all_messages.append(user_message)
                         all_messages.extend(assistant_messages)
-                    return "\n".join(all_messages)
+                    return {text: "\n".join(all_messages) , conversation:conversation}
                 
             elif type_data == "chat":
                 message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id).first()
@@ -298,7 +298,7 @@ class DocumentDownloadView(APIView):
                                 if lang == text_tran_info.get("code", ""):
                                     text = text_tran_info.get("text", "")
                         assistant_message = text
-                    return f"{user_message}\n{assistant_message}"
+                    return {text:f"{user_message}\n{assistant_message}",conversation:conversation}
             else:
                 return "No messages found for the given conversation_id"
 
@@ -310,6 +310,8 @@ class DocumentDownloadView(APIView):
             serializer = DocumentclassSerializer(data=request.query_params)
             serializer.is_valid(raise_exception=True)
             text_mt = self.build_message(serializer.validated_data)
+            text_markdown = text_mt.get('text', '')
+            conversation = text_mt.get('conversation', '')
             input_text = f"{text_mt}"
             output_format = serializer.validated_data.get("output_format", "").lower()
             if output_format == "docx":
@@ -334,7 +336,16 @@ class DocumentDownloadView(APIView):
                 ]
             #    "--variable=lang:ar",
             #    "--variable=dir:rtl",
-            pandoc_converter = PandocConverter(input_text, output_file, options)
+            yaml_metadata_block = f'''
+            ---
+title: {conversation.title}
+author: Rand AI
+date: {conversation.created_at}
+lang: "{conversation.lang.code}"
+...
+            '''
+            final_text = yaml_metadata_block + input_text
+            pandoc_converter = PandocConverter(final_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)
             response = FileResponse(open(file_path, "rb"))
