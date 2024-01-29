@@ -346,10 +346,11 @@ class DocumentDownloadView(APIView):
                 yaml_metadata_block = f"""
 ---
 title: {str(conversation.title)}
-author: Rand AI
+author: [Rand AI]
 date: {str(conversation.created_at)}
 lang: "{conversation.lang.code}"
 ...
+
 """
                 print(yaml_metadata_block)
                 options = [
