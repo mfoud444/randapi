@@ -363,7 +363,7 @@ titlepage: true
                 ]
 
 
-            final_text = f"{yaml_metadata_block}{text_markdown}"
+            # final_text = f"{yaml_metadata_block}{text_markdown}"
             pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)
