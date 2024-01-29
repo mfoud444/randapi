@@ -143,7 +143,9 @@ class ChatAPIView(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         )
                 elif is_research:
-                    helper_instance = HelperChatText(serializer.validated_data,False,True)
+                    helper_instance = HelperChatText(
+                        serializer.validated_data, False, True
+                    )
                     valid_request = helper_instance.build_valid_request()
                     object_chat = ResearchGen(valid_request)
                     print("valid_request", valid_request)
@@ -197,17 +199,19 @@ class ChatAPIView(APIView):
 
 class ChatTextAPIView(ChatAPIView):
     def post(self, request, *args, **kwargs):
-        return self.handle_request(request, is_image=False,  is_research= False)
+        return self.handle_request(request, is_image=False, is_research=False)
 
 
 class ChatImageAPIView(ChatAPIView):
     def post(self, request, *args, **kwargs):
-        return self.handle_request(request, is_image=True, is_research= False)
+        return self.handle_request(request, is_image=True, is_research=False)
 
 
 class ChatResearchAPIView(ChatAPIView):
     def post(self, request, *args, **kwargs):
-        return self.handle_request(request, is_image=False, is_research= True)
+        return self.handle_request(request, is_image=False, is_research=True)
+
+
 class GetImageView(APIView):
     def get(self, request, *args, **kwargs):
         try:
@@ -232,10 +236,9 @@ from .Messages import ListMessagesSerializer
 
 
 class DocumentDownloadView(APIView):
-    
-    
     def is_tran(lang):
-        return 'ar'
+        return "ar"
+
     def build_message(self, data):
         try:
             print("data", data)
@@ -246,11 +249,16 @@ class DocumentDownloadView(APIView):
             try:
                 conversation = Conversation.objects.get(id=conversation_id)
             except Conversation.DoesNotExist:
-                return Response({"error": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {"error": "Conversation not found"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
             lang = conversation.lang.code
             print("conversation_id", conversation.lang.code)
             if type_data == "conversation":
-                message_user_instances = MessageUser.objects.filter(conversation__id=conversation_id)
+                message_user_instances = MessageUser.objects.filter(
+                    conversation__id=conversation_id
+                )
 
                 if message_user_instances:
                     all_messages = []
@@ -260,7 +268,7 @@ class DocumentDownloadView(APIView):
                         data = serializer.data
 
                         user_message = (
-                              '# ' + data["message_user"]["text"].strip()
+                            "# " + data["message_user"]["text"].strip()
                             if "message_user" in data
                             else ""
                         )
@@ -269,8 +277,8 @@ class DocumentDownloadView(APIView):
                         for i, msg in enumerate(data["message_ai"]):
                             text = msg.get("text", "")
                             text_tran = msg.get("text_tran_info", "")
-                            if lang != 'en':
-                                for t, text_tran_info  in enumerate(text_tran):
+                            if lang != "en":
+                                for t, text_tran_info in enumerate(text_tran):
                                     if lang == text_tran_info.get("code", ""):
                                         text = text_tran_info.get("text", "")
                             formatted_msg = (
@@ -280,25 +288,34 @@ class DocumentDownloadView(APIView):
 
                         all_messages.append(user_message)
                         all_messages.extend(assistant_messages)
-                    return {text: "\n".join(all_messages) , conversation:conversation}
-                
+                    return {"text": "\n".join(all_messages), "conversation": conversation}
+
             elif type_data == "chat":
-                message_user_instance = MessageUser.objects.filter(id=message_user_id, conversation__id=conversation_id).first()
+                message_user_instance = MessageUser.objects.filter(
+                    id=message_user_id, conversation__id=conversation_id
+                ).first()
                 if message_user_instance:
                     serializer = ListMessagesSerializer(message_user_instance)
                     data = serializer.data
-                    user_message = ('# ' + data["message_user"]["text"].strip() if "message_user" in data else "")
+                    user_message = (
+                        "# " + data["message_user"]["text"].strip()
+                        if "message_user" in data
+                        else ""
+                    )
                     user_message += "\n"
                     assistant_message = ""
                     for i, msg in enumerate(data["message_ai"]):
                         text = msg.get("text", "")
                         text_tran = msg.get("text_tran_info", "")
-                        if lang != 'en':
-                            for t, text_tran_info  in enumerate(text_tran):
+                        if lang != "en":
+                            for t, text_tran_info in enumerate(text_tran):
                                 if lang == text_tran_info.get("code", ""):
                                     text = text_tran_info.get("text", "")
                         assistant_message = text
-                    return {text:f"{user_message}\n{assistant_message}",conversation:conversation}
+                    return {
+                        "text": f"{user_message}\n{assistant_message}",
+                        "conversation": conversation,
+                    }
             else:
                 return "No messages found for the given conversation_id"
 
@@ -310,15 +327,15 @@ class DocumentDownloadView(APIView):
             serializer = DocumentclassSerializer(data=request.query_params)
             serializer.is_valid(raise_exception=True)
             text_mt = self.build_message(serializer.validated_data)
-            text_markdown = text_mt.get('text', '')
-            conversation = text_mt.get('conversation', '')
+            text_markdown = text_mt.get("text", "")
+            conversation = text_mt.get("conversation", "")
             input_text = f"{text_mt}"
             output_format = serializer.validated_data.get("output_format", "").lower()
             if output_format == "docx":
                 output_file = "output.docx"
                 options = [
                     "--to=docx",
-                     "--variable=mainfont:Amiri",
+                    "--variable=mainfont:Amiri",
                     "--variable=dir:rtl",
                 ]
             elif output_format == "pptx":
@@ -326,24 +343,24 @@ class DocumentDownloadView(APIView):
                 options = ["--to=pptx"]
             else:
                 output_file = "output.pdf"
+                yaml_metadata_block = f"""
+---
+title: {str(conversation.title)}
+author: Rand AI
+date: {str(conversation.created_at)}
+lang: "{conversation.lang.code}"
+...
+"""
+                print(yaml_metadata_block)
                 options = [
                     "--pdf-engine=xelatex",
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                     "--variable=mainfont:Amiri",
-              
-                
                 ]
             #    "--variable=lang:ar",
             #    "--variable=dir:rtl",
-            yaml_metadata_block = f'''
-            ---
-title: {conversation.title}
-author: Rand AI
-date: {conversation.created_at}
-lang: "{conversation.lang.code}"
-...
-            '''
+
             final_text = yaml_metadata_block + input_text
             pandoc_converter = PandocConverter(final_text, output_file, options)
             pandoc_converter.convert()
@@ -357,18 +374,19 @@ lang: "{conversation.lang.code}"
             )
 
 
-
-
-@api_view(['POST'])
+@api_view(["POST"])
 def translate_text(request):
-    if 'text' not in request.data or 'dest' not in request.data:
-        return Response({'error': 'Both "text" and "dest" parameters are required.'}, status=status.HTTP_400_BAD_REQUEST)
+    if "text" not in request.data or "dest" not in request.data:
+        return Response(
+            {"error": 'Both "text" and "dest" parameters are required.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-    text = request.data['text']
-    dest = request.data['dest']
+    text = request.data["text"]
+    dest = request.data["dest"]
 
     try:
         translation_result = TextTran().translate(text, dest)
-        return Response({'result': translation_result}, status=status.HTTP_200_OK)
+        return Response({"result": translation_result}, status=status.HTTP_200_OK)
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
