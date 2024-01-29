@@ -329,7 +329,7 @@ class DocumentDownloadView(APIView):
             text_mt = self.build_message(serializer.validated_data)
             text_markdown = text_mt.get("text", "")
             conversation = text_mt.get("conversation", "")
-            input_text = f"{text_mt}"
+            input_text = f"{text_markdown}"
             output_format = serializer.validated_data.get("output_format", "").lower()
             if output_format == "docx":
                 output_file = "output.docx"
@@ -343,23 +343,16 @@ class DocumentDownloadView(APIView):
                 options = ["--to=pptx"]
             else:
                 output_file = "output.pdf"
-#                 yaml_metadata_block = f"""
-# ---
-# title: {str(conversation.title)}
-# author: [Rand AI]
-# date: {str(conversation.created_at)}
-# lang: "{conversation.lang.code}"
-# ...
-            yaml_metadata_block = """
-          ---
-title: "Example PDF"
-author: [Author]
-date: "2017-02-20"
-subject: "Markdown"
-keywords: [Markdown, Example]
-lang: "en"
+                yaml_metadata_block = f"""
+---
+title: {str(conversation.title)}
+author: [Rand AI]
+date: {str(conversation.created_at)}
+lang: "{conversation.lang.code}"
 ...
 """
+                
+             
                 print(yaml_metadata_block)
                 options = [
                     "--pdf-engine=xelatex",
@@ -370,7 +363,7 @@ lang: "en"
             #    "--variable=lang:ar",
             #    "--variable=dir:rtl",
 
-            final_text = yaml_metadata_block + input_text
+            final_text = f"{yaml_metadata_block}{text_markdown}"
             pandoc_converter = PandocConverter(final_text, output_file, options)
             pandoc_converter.convert()
             file_path = os.path.abspath(output_file)
