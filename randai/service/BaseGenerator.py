@@ -12,6 +12,11 @@ from undetected_chromedriver import Chrome, ChromeOptions
 from g4ff import g4ff0202, g4ff0203, g4ff0204
 settings = Settings()
 
+errors_response = [
+        "https://static.cloudflareinsights.com/beacon.min.js/",
+    "mlc::llm::LLMChatModule::GetFunction"
+]
+
 class BaseGenerator:
     def __init__(self, req):
         self.g4f = g4f
@@ -22,6 +27,7 @@ class BaseGenerator:
         self.completion_timestamp = int(time.time())
         self.webdriver = None
         self.initialize_request_attributes(req)
+        self.errors_response = errors_response
 
     def initialize_request_attributes(self, req):
         self.model = req.get('model', settings.default_model_text['code'])

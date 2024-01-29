@@ -23,11 +23,15 @@ class ChatText(BaseGenerator):
             try:
                 params = self.prepare_params()
                 response = self.g4f.ChatCompletion.create(**params)
-                if response is None:
+                if response is not None:
+                    if any(error_response in response for error_response in self.errors_response):
+                        retries += 1
+                    else:
+                        break
+                    
+                else:
                     print("Received None response. Retrying...")
                     retries += 1
-                else:
-                    break
 
             except (RuntimeError, Exception) as e:
                 print(f"Error during generate:")
@@ -54,7 +58,7 @@ class ChatText(BaseGenerator):
                 if response is None:
                     raise ValueError("ChatCompletion.create returned None")
                 for chunk in response:
-                    if "https://static.cloudflareinsights.com/beacon.min.js/" in chunk:
+                    if any(error_response in chunk for error_response in self.errors_response):
                         attempts += 1
                         break
                     res["text"] += chunk

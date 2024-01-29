@@ -61,7 +61,7 @@ class ResearchGen(BaseGenerator):
                     if response is None:
                         raise ValueError("ChatCompletion.create returned None")
                     for chunk in response:
-                        if "https://static.cloudflareinsights.com/beacon.min.js/" in chunk:
+                        if any(error_response in chunk for error_response in self.errors_response):
                             attempts += 1
                             break
                         step_result += chunk
@@ -128,27 +128,29 @@ class ResearchGen(BaseGenerator):
             while retries < self.max_retries:
                 try:
                     response = self.g4f.ChatCompletion.create(**params)
+                    print(response)
                     if response is not None:
-                        if "mlc::llm::LLMChatModule::GetFunction" in response:
+                        if any(error_response in response for error_response in self.errors_response):
                             retries += 1
                             break
-                        generated_results[step] = response
-                        params['messages'] += [{"role": "assistant", "content": response}]
-                        
-                        completion_data["messageAi"]["text"] = response
-                        
-                        text_results += header_step
-                        text_results += response.strip()  + "\n\n"
-                        if self.is_tran:
-                            response_tran  = TextTran().translate_without_code(response, self.lang).strip() + "\n\n"
-                            completion_data["messageAi"]["text"] = response_tran
-                            tran_text_results += header_step
-                            tran_text_results += response_tran
-                            print("tran_text_results", tran_text_results)
-                        content = json.dumps(completion_data, separators=(',', ':'))
-                        yield f'{content} \n'
-                        completion_data["messageAi"]["text"] = ""
-                        break 
+                        else:
+                            generated_results[step] = response
+                            params['messages'] += [{"role": "assistant", "content": response}]
+                            
+                            completion_data["messageAi"]["text"] = response
+                            
+                            text_results += header_step
+                            text_results += response.strip()  + "\n\n"
+                            if self.is_tran:
+                                response_tran  = TextTran().translate_without_code(response, self.lang).strip() + "\n\n"
+                                completion_data["messageAi"]["text"] = response_tran
+                                tran_text_results += header_step
+                                tran_text_results += response_tran
+                                print("tran_text_results", tran_text_results)
+                            content = json.dumps(completion_data, separators=(',', ':'))
+                            yield f'{content} \n'
+                            completion_data["messageAi"]["text"] = ""
+                            break 
                     else:
                         print(f"Received None response for step {step}. Retrying...")
                         retries += 1
