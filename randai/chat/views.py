@@ -14,7 +14,7 @@ from .Helper.HelperChatText import HelperChatText
 from .Conversation import Conversation
 from service import ChatText, ImageGenerator, ResearchGen
 from django.http import StreamingHttpResponse, HttpResponse
-from util import TextTran, Settings, PandocConverter
+from util import TextTran, Settings, PandocConverter, WordTool
 from chat.ModelsAi import ModelAI, ModelAISerializer
 from rest_framework.decorators import api_view
 
@@ -366,7 +366,23 @@ titlepage: true
             # final_text = f"{yaml_metadata_block}{text_markdown}"
             pandoc_converter = PandocConverter(input_text, output_file, options)
             pandoc_converter.convert()
+            
             file_path = os.path.abspath(output_file)
+            if output_format == "docx":
+                cover_path =  os.path.abspath('cover1.docx')
+                word_tool = WordTool()
+                replacements_dict = {'title': str(conversation.title), 'author': "Rand AI"}
+                word_tool.set_cover(cover_path, replacements_dict)
+                cover_path = os.path.abspath('modified_document.docx')
+                print(cover_path)
+                
+                # word_tool.combine_word_documents(files)
+                word_tool.combined(cover_path, file_path)
+                file_path = os.path.abspath('combined.docx') 
+
+            
+            
+            
             response = FileResponse(open(file_path, "rb"))
             response["Content-Disposition"] = f'attachment; filename="{output_file}"'
             return response

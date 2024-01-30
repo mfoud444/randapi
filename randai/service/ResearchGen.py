@@ -36,7 +36,7 @@ class ResearchGen(BaseGenerator):
         return "\n\n" + "# " + get_title(step.strip(), lang).capitalize() + "\n\n"
     
     def create_stream_response(self):
-        attempts = 0
+        
         res = {"text": ''}
         completion_data = {
             "conversation": {"id": str(self.conversation_id), "title": ""},
@@ -49,35 +49,44 @@ class ResearchGen(BaseGenerator):
         params = self.prepare_params()
         params['messages'] = []
         for step, prompt_template in self.step_research.items():
+            attempts = 0
             prompt = prompt_template.format(topic=self.topic)
             params['messages'] += [{"role": "user", "content": prompt}]
             print("========i am fuck ==========>",step )
             step_result = ""
             while attempts < self.max_attempts:
                 try:
-                    response = self.g4f.ChatCompletion.create(**params)
+                    print("attemp", attempts)
+                    response =self.g4f.ChatCompletion.create(**params)
+                    print("response",response)
                     header_step = self.get_title_step(step)
                     completion_data["messageAi"]["text"] += header_step
-                    if response is None:
-                        raise ValueError("ChatCompletion.create returned None")
-                    for chunk in response:
-                        if any(error_response in chunk for error_response in self.errors_response):
-                            attempts += 1
-                            break
-                        step_result += chunk
-                        completion_data["messageAi"]["text"] += chunk
-                        content = json.dumps(completion_data, separators=(',', ':'))
-                        print(completion_data)
-                        completion_data["messageAi"]["text"] = ""
-                        yield f'{content} \n'
+                    if response is not None and response:
+                        print(response)
+                        for chunk in response:
+                            if any(error_response in chunk for error_response in self.errors_response):
+                                print("annny error")
+                                attempts += 1
+                                break
+                            step_result += chunk
+                            completion_data["messageAi"]["text"] += chunk
+                            content = json.dumps(completion_data, separators=(',', ':'))
+                            print("completion_data",step)
+                            completion_data["messageAi"]["text"] = ""
+                            yield f'{content} \n'
 
-                    
-                    generated_results[step] = step_result.strip()
-                    params['messages'] += [{"role": "assistant", "content": step_result.strip()}]
-                    res["text"] += header_step
-                    res["text"] += step_result.strip()  + "\n\n" 
-                    break
+                        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+                        generated_results[step] = step_result.strip()
+                        params['messages'] += [{"role": "assistant", "content": step_result.strip()}]
+                        res["text"] += header_step
+                        res["text"] += step_result.strip()  + "\n\n" 
+                        break
+                    else:
+                        print(f"Received None response for step {step}. Retrying...")
+                        attempts += 1
+                        continue
                 except (RuntimeError, Exception) as e:
+                    print("errpr rrr")
                     print(f"Error {e}")
                     print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
                     attempts += 1
@@ -132,7 +141,7 @@ class ResearchGen(BaseGenerator):
                 try:
                     response = self.g4f.ChatCompletion.create(**params)
                     print(response)
-                    if response is not None:
+                    if response is not None and response != '':
                         if any(error_response in response for error_response in self.errors_response):
                             retries += 1
                             break

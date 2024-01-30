@@ -373,7 +373,7 @@ def get_title(key, lang= 'en'):
     
     # Ensure the provided language is in lowercase
     lang = lang.lower()
-    print(lang)
+    
     
     # If the language and key are present, return the translated title
     if lang in step_tran and key in step_tran[lang]:

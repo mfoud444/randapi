@@ -22,7 +22,7 @@ class BaseGenerator:
         self.g4f = g4f
         self.valid_request = req
         self.max_attempts = 5
-        self.max_retries = 3
+        self.max_retries = 5
         self.completion_id = ''.join(random.choices(string.ascii_letters + string.digits, k=28))
         self.completion_timestamp = int(time.time())
         self.webdriver = None

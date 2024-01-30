@@ -1,5 +1,5 @@
 import subprocess
-
+from .WordTool import WordTool
 class PandocConverter:
     def __init__(self, input_text, output_file, options=None):
         self.input_text = input_text
