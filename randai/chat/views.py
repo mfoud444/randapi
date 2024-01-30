@@ -368,17 +368,17 @@ titlepage: true
             pandoc_converter.convert()
             
             file_path = os.path.abspath(output_file)
-            if output_format == "docx":
-                cover_path =  os.path.abspath('cover1.docx')
-                word_tool = WordTool()
-                replacements_dict = {'title': str(conversation.title), 'author': "Rand AI"}
-                word_tool.set_cover(cover_path, replacements_dict)
-                cover_path = os.path.abspath('modified_document.docx')
-                print(cover_path)
+            # if output_format == "docx":
+            #     cover_path =  os.path.abspath('cover1.docx')
+            #     word_tool = WordTool()
+            #     replacements_dict = {'title': str(conversation.title), 'author': "Rand AI"}
+            #     word_tool.set_cover(cover_path, replacements_dict)
+            #     cover_path = os.path.abspath('modified_document.docx')
+            #     print(cover_path)
                 
-                # word_tool.combine_word_documents(files)
-                word_tool.combined(cover_path, file_path)
-                file_path = os.path.abspath('combined.docx') 
+            #     # word_tool.combine_word_documents(files)
+            #     word_tool.combined(cover_path, file_path)
+            #     file_path = os.path.abspath('combined.docx') 
 
             
             
