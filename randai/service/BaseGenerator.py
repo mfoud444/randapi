@@ -64,7 +64,7 @@ class BaseGenerator:
             self.g4f = g4ff0204
             params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
-            # params["provider"] = 'Bing'
+            params["provider"] = 'Bing'
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
