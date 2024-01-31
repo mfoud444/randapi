@@ -69,10 +69,10 @@ class BaseGenerator:
             # print("proxy", proxy)
             # params["proxy"] = proxy
             self.g4f = g4ff0202
-            # options = ChromeOptions()
-            # options.add_argument("--incognito")
-            # self.webdriver = Chrome(options=options, headless=True, version_main = 120)
-            # params["webdriver"] = self.webdriver
+            options = ChromeOptions()
+            options.add_argument("--incognito")
+            self.webdriver = Chrome(options=options, headless=True, version_main = 120)
+            params["webdriver"] = self.webdriver
             
             if self.is_web_search:
                 params["web_search"] = self.is_web_search
