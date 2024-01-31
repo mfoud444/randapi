@@ -68,7 +68,7 @@ class BaseGenerator:
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
-            self.g4f = g4ff0202
+            self.g4f = g4ff0204
             options = ChromeOptions()
             options.add_argument("--incognito")
             self.webdriver = Chrome(options=options, headless=True, version_main = 120)
