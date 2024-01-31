@@ -1,4 +1,4 @@
-import g4f as g4ff0204
+from .g4f import *
 import time
 from .g4f.Provider.bing import CreateImagesBing
 from fp.fp import FreeProxy

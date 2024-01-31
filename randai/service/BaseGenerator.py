@@ -19,7 +19,7 @@ errors_response = [
 
 class BaseGenerator:
     def __init__(self, req):
-        self.g4f = g4f
+        self.g4f = g4ff0204
         self.valid_request = req
         self.max_attempts = 5
         self.max_retries = 5
@@ -68,11 +68,11 @@ class BaseGenerator:
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
-            self.g4f = g4ff0204
-            options = ChromeOptions()
-            options.add_argument("--incognito")
-            self.webdriver = Chrome(options=options, headless=True, version_main = 120)
-            params["webdriver"] = self.webdriver
+            self.g4f = g4f
+            # options = ChromeOptions()
+            # options.add_argument("--incognito")
+            # self.webdriver = Chrome(options=options, headless=True, version_main = 120)
+            # params["webdriver"] = self.webdriver
             
             if self.is_web_search:
                 params["web_search"] = self.is_web_search
@@ -83,6 +83,10 @@ class BaseGenerator:
         if self.model == 'mixtral-8x7b':
             self.g4f = g4ff0204
             # params["provider"] = 'huggingface'
+        if self.model  == 'gemini-pro':
+            self.g4f = g4ff0204
+            # params["provider"] = 'FreeChatgpt'
+            
         print("params", params)
         return params
 

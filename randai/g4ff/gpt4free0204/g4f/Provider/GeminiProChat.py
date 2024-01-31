@@ -49,7 +49,8 @@ class GeminiProChat(AsyncGeneratorProvider):
             async with session.post(f"{cls.url}/api/generate", json=data, proxy=proxy) as response:
                 response.raise_for_status()
                 async for chunk in response.content.iter_any():
-                    yield chunk.decode()
+                    print("hhhhh")
+                    yield chunk.decode('utf-8', errors='ignore')
                         
 def generate_signature(time: int, text: str):
     message = f'{time}:{text}:9C4680FB-A4E1-6BC7-052A-7F68F9F5AD1F';

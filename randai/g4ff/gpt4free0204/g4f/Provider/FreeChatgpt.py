@@ -54,7 +54,7 @@ class FreeChatgpt(AsyncGeneratorProvider):
                 "messages":messages,
                 "stream":True,
                 "model":model,
-                "temperature":0.5,
+                "temperature":0.8,
                 "presence_penalty":0,
                 "frequency_penalty":0,
                 "top_p":1,
@@ -70,6 +70,7 @@ class FreeChatgpt(AsyncGeneratorProvider):
                         line = json.loads(line[6:])
                         if(line["choices"]==[]):
                             continue
+                        print("here freechatgpt")
                         chunk = line["choices"][0]["delta"].get("content")
                         if chunk:
                             started = True

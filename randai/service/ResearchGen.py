@@ -66,16 +66,23 @@ class ResearchGen(BaseGenerator):
                         for chunk in response:
                             if any(error_response in chunk for error_response in self.errors_response):
                                 print("annny error")
+                                print(f"Received None response for step {step}. Retrying...")
                                 attempts += 1
-                                break
-                            step_result += chunk
-                            completion_data["messageAi"]["text"] += chunk
-                            content = json.dumps(completion_data, separators=(',', ':'))
-                            print("completion_data",step)
-                            completion_data["messageAi"]["text"] = ""
-                            yield f'{content} \n'
+                                continue
+                            else:
+                                try:
+                                    decoded_chunk = chunk
+                                    step_result += decoded_chunk
+                                    completion_data["messageAi"]["text"] += decoded_chunk
+                                    content = json.dumps(completion_data, separators=(',', ':'))
+                                    print("completion_data",step)
+                                    completion_data["messageAi"]["text"] = ""
+                                    yield f'{content} \n'
+                                except UnicodeDecodeError as decode_error:
+                                    print(f"UnicodeDecodeError: {decode_error}")
+                                    continue
 
-                        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+                        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",response)
                         generated_results[step] = step_result.strip()
                         params['messages'] += [{"role": "assistant", "content": step_result.strip()}]
                         res["text"] += header_step
