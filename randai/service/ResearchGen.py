@@ -68,7 +68,7 @@ class ResearchGen(BaseGenerator):
                                 print("annny error")
                                 print(f"Received None response for step {step}. Retrying...")
                                 attempts += 1
-                                continue
+                                break
                             else:
                                 try:
                                     decoded_chunk = chunk
