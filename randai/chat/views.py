@@ -351,13 +351,12 @@ class DocumentDownloadView(APIView):
 title: {str(conversation.title)}
 author: [Rand AI]
 date: {str(conversation.created_at.strftime('%d-%m-%Y'))}
-lang: "{conversation.lang.code}"
 titlepage: true
 book: true
 ...
 """
                 
-             
+                #lang: "{conversation.lang.code}"
                 print(yaml_metadata_block)
                 options = [
                     "--pdf-engine=xelatex",
