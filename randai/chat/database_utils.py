@@ -98,6 +98,7 @@ def save_data_in_db(valid_request, response, is_image=False):
             message_user.message_ai.add(message_message_ai_text)
            
             res = response.get('text', '')
+            res_translate = response.get('text', '')
             if valid_request.get('is_tran', False):
                     lang_code = valid_request.get('lang', '')
                     text_tran_user = valid_request.get('text_tran_user', '')
@@ -108,18 +109,20 @@ def save_data_in_db(valid_request, response, is_image=False):
                     else:   
                         res_translate = TextTran().translate_without_code(res, valid_request.get('lang',''))
                     if res_translate:
-                        res = res_translate
+                        # res = res_translate
                         # print(f"resdd: {res}")
                         text_tran_message_user = TextTranMessage.objects.create(text=text_tran_user, code=language_instance)
-                        text_tran_message_ai = TextTranMessage.objects.create(text=res, code=language_instance)
+                        text_tran_message_ai = TextTranMessage.objects.create(text=res_translate , code=language_instance)
                         message_user.text_tran.add(text_tran_message_user)
                         message_message_ai_text.text_tran.add(text_tran_message_ai)
             text_tran_user_list = list(message_user.text_tran.values())
             text_tran_ai_list = list(message_message_ai_text.text_tran.values())
+           
+           
             return {
                 "conversation": {"id": str(conversation.id), "title": conversation.title, 'updated_at':str(conversation.updated_at)},
-                "messageUser": {"id": message_user.id , 'textTran':text_tran_user_list},
-                "messageAi": {"id": message_message_ai_text.id, "text": res,'textTran':text_tran_ai_list, "loading": False},
+                "messageUser": {"id": message_user.id , 'textTranInfo':text_tran_user_list},
+                "messageAi": {"id": message_message_ai_text.id, "text": res,'textTranInfo':text_tran_ai_list, "loading": False},
             }
 
     except Http404 as e:

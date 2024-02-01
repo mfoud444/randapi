@@ -1,5 +1,7 @@
 # myapp/views.py
 from rest_framework import viewsets, status
+from datetime import datetime
+
 from rest_framework.response import Response
 from django.core.exceptions import RequestAborted
 from rest_framework.views import APIView
@@ -343,13 +345,15 @@ class DocumentDownloadView(APIView):
                 options = ["--to=pptx"]
             else:
                 output_file = "output.pdf"
+                logo_path = os.path.abspath('logo.png')
                 yaml_metadata_block = f"""
 ---
 title: {str(conversation.title)}
 author: [Rand AI]
-date: {str(conversation.created_at)}
+date: {str(conversation.created_at.strftime('%d-%m-%Y'))}
 lang: "{conversation.lang.code}"
 titlepage: true
+book: true
 ...
 """
                 
@@ -360,7 +364,10 @@ titlepage: true
                     "--variable=geometry:margin=1in",
                     "--template=/usr/share/pandoc/templates/eisvogel.latex",
                     "--variable=mainfont:Amiri",
+                    
+                    "--listings",
                 ]
+                input_text = f"{yaml_metadata_block}{text_markdown}"
 
 
             # final_text = f"{yaml_metadata_block}{text_markdown}"
