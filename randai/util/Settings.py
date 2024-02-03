@@ -2,6 +2,12 @@ import json
 from pathlib import Path
 
 class Settings:
+    
+    def __init__(self, is_emojis= True):
+        self.is_emojis = is_emojis
+        self.system_message_rand = {}
+        self.load_system_message_rand()
+        
     TOKAN_LAST = "jUSOLlYPaqpHxBDmX"
     START = "hf_voHpivBBmKCvyThoi"
     TOKAN = START + TOKAN_LAST
@@ -51,18 +57,20 @@ class Settings:
     default_proxy = None
     system_message_rand = {}
 
-    def __init__(self):
-        self.load_system_message_rand()
 
-    @classmethod
-    def load_system_message_rand(cls):
+
+    def load_system_message_rand(self):
         json_file_path = Path(__file__).resolve().parent / 'system_prompt.json'
         try:
             with open(json_file_path, 'r', encoding='utf-8') as json_file:
-                cls.system_message_rand = json.load(json_file)
+                self.system_message_rand = json.load(json_file)
+                if self.is_emojis:
+                    self.system_message_rand['en'] =  f"Use emojis in your answers. {self.system_message_rand.get('en', '')}"
+                    self.system_message_rand['ar'] =  f"إستخدم الإيموجي في إجاباتك {self.system_message_rand.get('ar', '')}"
+                    
         except FileNotFoundError:
             print(f"Warning: {json_file_path} not found. Using an empty dictionary.")
-            cls.system_message_rand = {}
+            self.system_message_rand = {}
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON in {json_file_path}: {e}")
-            cls.system_message_rand = {}
+            self.system_message_rand = {}

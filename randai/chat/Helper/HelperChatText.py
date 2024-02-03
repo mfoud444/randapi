@@ -17,7 +17,7 @@ from service import ChatText
 from chat.ModelsAi import ModelAISerializer , ModelAI
 from chat.Conversation import Conversation
 from chat.Messages import MessageUser , ListMessagesSerializer
-settings = Settings()
+
 
 class HelperChatText:
     def __init__(self, user_req,  is_image=False , is_research = False):
@@ -25,9 +25,11 @@ class HelperChatText:
         self.validate_req = {}
         self.is_image = is_image
         self.is_research = is_research
+        self.settings = Settings(is_emojis=self.user_req.get('is_emojis',True))
 
     def build_valid_request(self):
         self.initialize_valid_request()
+        
         
         self.set_model_information()
         self.check_language_support()
@@ -57,7 +59,7 @@ class HelperChatText:
             'provider': '',
             'temperature': self.user_req.get('temperature', 0.8),
             'top_p': self.user_req.get('top_p', 0.8),
-            'message': [{'role': 'system', 'content': settings.system_message_rand.get(self.user_req.get('lang', 'en'),'') }],
+            'message': [{'role': 'system', 'content': self.settings.system_message_rand.get(self.user_req.get('lang', 'en'),'') }],
             'is_tran': False,
             'lang': self.user_req.get('lang', ''),
             'conv': None,
@@ -68,6 +70,7 @@ class HelperChatText:
             'image_path':self.user_req.get('image', ''),
             'image_uri':'',
             'type':'text',
+            'is_emojis':self.user_req.get('is_emojis', True),
         }
 
     def set_conversation(self):
@@ -113,7 +116,8 @@ class HelperChatText:
                     if self.validate_req['text_tran_user']:
                         print("Translation successful:", self.validate_req['text_tran_user'])
                         self.validate_req['message'] += [{"role": "user", "content": self.validate_req['text_tran_user']}]
-                        self.validate_req['message'][0] = {'role': 'system', 'content': settings.system_message_rand.get('en', '')}
+                        self.validate_req['message'][0] = {'role': 'system', 'content': self.settings.system_message_rand.get('en', '')}
+                        print("self.validate_req['message'][0]", self.validate_req['message'][0])
                         break  # Break out of the loop if translation is successful
                     else:
                         print("Translated text is empty")
@@ -150,7 +154,7 @@ class HelperChatText:
             self.set_default_model_information()
 
     def set_default_model_information(self):
-        default_model = Settings.default_model_image if self.is_image else Settings.default_model_text
+        default_model = self.settings.default_model_image if self.is_image else self.settings.default_model_text
         self.validate_req.update({
             "model": default_model['code'],
             "provider": default_model['provider'],
