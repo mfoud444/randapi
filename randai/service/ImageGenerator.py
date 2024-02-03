@@ -17,7 +17,7 @@ class ImageGenerator:
         self.req = req
         self.settings = Settings()
         self.helper = Helper()
-        self.script_dir = os.path.abspath("out/images")
+        self.script_dir = os.path.abspath("randapi/randai/out/images")
 
     def gen_image(self, type="huggface_endpoint"):
         image_functions = {
@@ -206,7 +206,7 @@ class ImageGenerator:
 
     def save_image(self, image_bytes, image_path):
         image = Image.open(io.BytesIO(image_bytes))
-        watermark_path = os.path.abspath("logo.png")
+        watermark_path = os.path.abspath("randapi/randai/logo.png")
         watermark = Image.open(watermark_path)
         watermark = watermark.resize((50, 50))
         image.paste(watermark, (10, image.height - watermark.height - 10))
