@@ -64,9 +64,9 @@ class Settings:
         try:
             with open(json_file_path, 'r', encoding='utf-8') as json_file:
                 self.system_message_rand = json.load(json_file)
-                # if self.is_emojis:
-                #     self.system_message_rand['en'] =  f"Use emojis in your answers. {self.system_message_rand.get('en', '')}"
-                #     self.system_message_rand['ar'] =  f"إستخدم الإيموجي في إجاباتك {self.system_message_rand.get('ar', '')}"
+                if self.is_emojis:
+                    self.system_message_rand['en'] =  f"Use emojis in your answers. {self.system_message_rand.get('en', '')}"
+                    self.system_message_rand['ar'] =  f"إستخدم الإيموجي في إجاباتك {self.system_message_rand.get('ar', '')}"
                     
         except FileNotFoundError:
             print(f"Warning: {json_file_path} not found. Using an empty dictionary.")
