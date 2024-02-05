@@ -15,7 +15,8 @@ from g4f import set_cookies
 
 errors_response = [
         "https://static.cloudflareinsights.com/beacon.min.js/",
-    "mlc::llm::LLMChatModule::GetFunction"
+    "mlc::llm::LLMChatModule::GetFunction",
+    "<PHIND_BACKEND_ERROR>",
 ]
 
 class BaseGenerator:
