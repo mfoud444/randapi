@@ -11,6 +11,7 @@ from fp.fp import FreeProxy
 from undetected_chromedriver import Chrome, ChromeOptions
 from g4ff import g4ff0202, g4ff0203, g4ff0204
 settings = Settings()
+from g4f import set_cookies
 
 errors_response = [
         "https://static.cloudflareinsights.com/beacon.min.js/",
@@ -69,6 +70,9 @@ class BaseGenerator:
             # print("proxy", proxy)
             # params["proxy"] = proxy
             self.g4f = g4f
+            set_cookies(".bing", {
+                        "_U": "1YauOWqa4RHPd6MqN_F5dG372dSLMu5bwxyGQFmlYU4Q3vG0OdvH1DV7KB8BBs-d0YjHTvLNHswj-NT00mb4-nv8k7DiAhj1D0Eq4QZ7F86KzJmf4GY9rfDIS2Lk15QgQkN2hJ3CYGHWaI_Pxwwv1TL4AJBJRrEXug8aqgGX688NBpuX48oBCi3iJPySdM9NLe9t3ICF2c1jqHpagh9w4fQ"
+                        })
             # options = ChromeOptions()
             # options.add_argument("--incognito")
             # self.webdriver = Chrome(options=options, headless=True, version_main = 120)
