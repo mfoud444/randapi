@@ -70,7 +70,7 @@ class BaseGenerator:
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
-            self.g4f = g4f
+            self.g4f = g4ff0204
             set_cookies(".bing", {
                         "_U": "1YauOWqa4RHPd6MqN_F5dG372dSLMu5bwxyGQFmlYU4Q3vG0OdvH1DV7KB8BBs-d0YjHTvLNHswj-NT00mb4-nv8k7DiAhj1D0Eq4QZ7F86KzJmf4GY9rfDIS2Lk15QgQkN2hJ3CYGHWaI_Pxwwv1TL4AJBJRrEXug8aqgGX688NBpuX48oBCi3iJPySdM9NLe9t3ICF2c1jqHpagh9w4fQ"
                         })
