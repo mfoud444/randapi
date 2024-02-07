@@ -3,9 +3,9 @@ from django.urls import path, include
 from rest_framework import routers
 from .views import *
 from .Conversation import ConversationAPIViewSet
-from .Messages import ListMessagesAPIViewSet
+from .Messages import ListMessagesAPIViewSet,  MessageAISet
 from .Images import  ListImageAIAPIViewSet
-from .ModelsAi import  ListModelAPIViewSet
+from .ModelsAi import  ListModelAPIViewSet 
 from .Conversation import delete_conversation
 
 router = routers.DefaultRouter()
@@ -21,6 +21,7 @@ router.register(r'prompt', PromptAPIViewSet)
 router.register(r'conversation', ConversationAPIViewSet)
 router.register(r'message-user', MessageUserAPIViewSet)
 router.register(r'message-ai', MessageAIAPIViewSet)
+router.register(r'update-message-ai', MessageAISet)
 
 router.register(r'messages', ListMessagesAPIViewSet)
 router.register(r'images', ListImageAIAPIViewSet)

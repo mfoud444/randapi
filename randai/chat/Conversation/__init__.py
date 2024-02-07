@@ -37,9 +37,6 @@ class ConversationSerializer(serializers.ModelSerializer):
     def get_chat(self, obj):
         chat = []
         return chat
-    # def get_type(self, obj):
-    #     if obj.model:
-    #         return obj.model.type_service
 
 class ConversationAPIViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -75,17 +72,20 @@ class ConversationAPIViewSet(viewsets.ModelViewSet):
             is_pin = request.data.get('is_pin', None)
             print("title", title)
             if title is not None:
+                print("title222", title)
                 instance.title = title
                 instance.save()
-            if is_like is not None:
+                return Response(status=200)
+            elif is_like is not None:
                 instance.is_like = is_like
                 instance.save()
-            if is_pin is not None:
+                return Response(status=200)
+            elif is_pin is not None:
                 instance.is_pin = is_pin
                 instance.save()
                 
-                serializer = self.get_serializer(instance)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                # serializer = self.get_serializer(instance)
+                return Response(status=200)
             else:
                 return Response("Title is required for update", status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:

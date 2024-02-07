@@ -5,8 +5,10 @@ from django.db import models
 from chat.ModelsAi import ModelAI
 from chat.Conversation import Conversation
 from chat.models import Language
+import uuid
 
 class TextTranMessage(models.Model):
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4,editable=True)
     code = models.ForeignKey(Language, on_delete=models.CASCADE)
     text = models.TextField()
     provider = models.CharField(max_length=255, blank=True)
@@ -14,6 +16,7 @@ class TextTranMessage(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
 class MessageAI(models.Model):
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4 , editable=True)
     text = models.TextField()
     text_tran = models.ManyToManyField(TextTranMessage, blank=True)
     model = models.ForeignKey(ModelAI, on_delete=models.CASCADE)
@@ -22,6 +25,7 @@ class MessageAI(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class MessageUser(models.Model):
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=True)
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
     text = models.TextField()
     text_tran = models.ManyToManyField(TextTranMessage, blank=True)
@@ -50,6 +54,28 @@ class MessageAISerializer(serializers.ModelSerializer):
     class Meta:
         model = MessageAI
         fields = '__all__'
+
+
+class MessageAISet(viewsets.ModelViewSet):
+    queryset = MessageAI.objects.all()
+    serializer_class = MessageAISerializer
+
+    def update(self, request, *args, **kwargs):
+        print("hhhhhhhhhhhhhhh", request.data)
+        instance = MessageAI.objects.get(id= request.data['id'])
+        print("hhhhhhhhhhhhhhh", instance)
+        # serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        # serializer.is_valid(raise_exception=True)
+        # print("hhhhhhhhhhhhhhh")
+        # Update the is_like field if it exists in the request data
+        if 'is_like' in request.data:
+            print("request.data['is_like']", request.data['is_like'])
+            instance.is_like = request.data['is_like']
+            instance.save()
+            # data = MessageAISerializer(instance)
+
+        return Response(status=200)
+        
 class ListMessagesSerializer(serializers.ModelSerializer):
     message_ai_info = MessageAISerializer(source='message_ai', read_only=True, many=True)
     text_tran_info = TextTranMessageSerializer(source='text_tran', read_only=True, many=True)

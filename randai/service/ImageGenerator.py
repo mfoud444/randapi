@@ -39,7 +39,8 @@ class ImageGenerator:
     def gen_image_huggface(self):
         prompt = self.req["text_tran_user"]
         images_list = []
-        models = ["SSD-1B", "stabilityai", "aesthetic", "stable_diffusion_v1_5"]
+        models = ["SSD-1B", "SSD-1B", "SSD-1B", "SSD-1B"]
+        # models = ["SSD-1B", "stabilityai", "aesthetic", "stable_diffusion_v1_5"]
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 executor.map(

@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 
 class Settings:
-    
     def __init__(self, is_emojis= True):
         self.is_emojis = is_emojis
         self.system_message_rand = {}
@@ -21,7 +20,6 @@ class Settings:
     UPLOAD_FOLDER_IMAGE = "out/images"
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     HOST = "https://randai09078-randdaj.hf.space"
-    # HOST = "http://127.0.0.1:8000"
     PORT = "8000"
     IS_TRAN = True
     STATE_CHOICES = [
