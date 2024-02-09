@@ -182,10 +182,11 @@ class ChatAPIView(APIView):
                         response = object_chat.gen_text()
                         print("valid_request", valid_request)
                         print("response", response)
-                        if valid_request.get("is_group_telegram", False):
-                            res = save_data_in_db(valid_request, response)
-                        else:
-                            res = response
+                        res = save_data_in_db(valid_request, response)
+                        # if valid_request.get("is_group_telegram", False):
+                        #     res = save_data_in_db(valid_request, response)
+                        # else:
+                        #     res = response
                         return Response(res, status=status.HTTP_200_OK)
 
             else:
