@@ -77,6 +77,7 @@ class ChatTextSerializer(serializers.Serializer):
     is_web_search  = serializers.BooleanField(required=False)
     image = serializers.CharField(required=False, allow_null=True,  allow_blank=True)
     is_emojis = serializers.BooleanField(required=False)
+    is_group_telegram = serializers.BooleanField(required=False)
 
 class DocumentclassSerializer(serializers.Serializer):
     user_id = serializers.CharField(required=True)

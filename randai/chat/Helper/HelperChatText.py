@@ -46,6 +46,8 @@ class HelperChatText:
             
         if self.validate_req['image_path']:
             self.validate_req['image_uri'] = self.image_path_to_data_uri(self.validate_req['image_path'])
+        if self.validate_req['is_group_telegram']:
+            self.validate_req['is_stream'] = False
         
             
         return self.validate_req
@@ -71,6 +73,7 @@ class HelperChatText:
             'image_uri':'',
             'type':'text',
             'is_emojis':self.user_req.get('is_emojis', True),
+            'is_group_telegram':self.user_req.get('is_group_telegram', False),
         }
 
     def set_conversation(self):

@@ -58,7 +58,7 @@ class ResearchGen(BaseGenerator):
                 try:
                     print("attemp", attempts)
                     response =self.g4f.ChatCompletion.create(**params)
-                    print("response",response)
+                    # print("response",response)
                     header_step = self.get_title_step(step)
                     completion_data["messageAi"]["text"] += header_step
                     if response is not None and response:
@@ -75,14 +75,14 @@ class ResearchGen(BaseGenerator):
                                     step_result += decoded_chunk
                                     completion_data["messageAi"]["text"] += decoded_chunk
                                     content = json.dumps(completion_data, separators=(',', ':'))
-                                    print("completion_data",step)
+                                    # print("completion_data",step)
                                     completion_data["messageAi"]["text"] = ""
                                     yield f'{content} \n'
                                 except UnicodeDecodeError as decode_error:
                                     print(f"UnicodeDecodeError: {decode_error}")
                                     continue
 
-                        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",response)
+                        # print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",response)
                         generated_results[step] = step_result.strip()
                         params['messages'] += [{"role": "assistant", "content": step_result.strip()}]
                         res["text"] += header_step
@@ -165,7 +165,7 @@ class ResearchGen(BaseGenerator):
                                 completion_data["messageAi"]["text"] = response_tran
                                 tran_text_results += header_step
                                 tran_text_results += response_tran
-                                print("tran_text_results", tran_text_results)
+                                # print("tran_text_results", tran_text_results)
                             content = json.dumps(completion_data, separators=(',', ':'))
                             yield f'{content} \n'
                             completion_data["messageAi"]["text"] = ""
