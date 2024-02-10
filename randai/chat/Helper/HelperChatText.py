@@ -91,7 +91,7 @@ class HelperChatText:
                 self.validate_req['conv'] = existing_conversation
                 if is_group_telegram:
                     print("========================================i am here is_group_telegram: ==========================================")
-                    self.validate_req['message'] = []
+                    pass
                 elif not self.is_image or not self.is_research:
                     print("========================================i am here ==========================================")
                     self.validate_req['message'] += self.build_message(conversation_id)
