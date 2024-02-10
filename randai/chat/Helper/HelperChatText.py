@@ -83,7 +83,7 @@ class HelperChatText:
     def set_conversation(self):
         is_group_telegram = self.user_req.get('is_group_telegram', False)
         print("===============================")
-        print("==========is_group_telegram============", is_group_telegram)
+        print("==========is_group_telegram============",   is_group_telegram)
         conversation_id = self.user_req.get('conversation_id')
         if conversation_id is not None:
             existing_conversation = Conversation.objects.filter(id=conversation_id).first()
