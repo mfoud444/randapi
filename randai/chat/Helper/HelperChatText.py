@@ -49,6 +49,8 @@ class HelperChatText:
         if self.validate_req['is_group_telegram']:
             self.validate_req['is_stream'] = False
             del self.validate_req['message'][0]
+            print("=================================================================")
+            print("self.validate_req['message']:", self.validate_req['message'])
             
         
             
