@@ -90,6 +90,7 @@ class HelperChatText:
             if existing_conversation:
                 self.validate_req['conv'] = existing_conversation
                 if not self.is_image or not self.is_research or not is_group_telegram:
+                    print("========================================i am here ==========================================")
                     self.validate_req['message'] += self.build_message(conversation_id)
         else:
             self.validate_req['conversation_id']  =  str(uuid.uuid4())
