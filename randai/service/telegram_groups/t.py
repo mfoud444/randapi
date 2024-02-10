@@ -1,28 +1,40 @@
+# !pip install telebot telethon
 from telethon import TelegramClient, events
 import asyncio
-import g4f
+import nest_asyncio
 import json
 import requests
 api_id = 22703059
 api_hash = 'e61d8d8fb6f1aa3c47cefdfdcc59592d'
-session_name = 'session1'
+session_name = 'session'
 client = TelegramClient(session_name, api_id, api_hash)
-
-
+keyword_list = [
+    "أريد بحث",
+    "أبغى حد يسوي بحث"
+]
+company_name = 'StudyCo'
+is_use_ai = True
+default_replay = [
+    "مرحبا يسعدني مساعدتك!"
+]
 async def get_message_ai(q:str):
   message = [
                     {'role': 'system', 'content': 'أنت الان في محادثة في التليجرام وقام شخص ما بإرسال الرسالة التالية , أريدك أن تقوم بالرد عليها بإعتبار أنك منصة إسمها "studyco" يجب أن تكون الرسالة قصيرة وتفي بالغرض قدر الإمكان'},
                     {"role": "user", "content": q}
                   ]
+  system_prompt = f'''
+أنت الان في محادثة في التليجرام وقام شخص ما بإرسال الرسالة التالية , أريدك أن تقوم بالرد عليها بإعتبار أنك منصة إسمها '{company_name}' يجب أن تكون الرسالة قصيرة وتفي بالغرض قدر الإمكان {q}"
+'''
   data = {
-    "prompt": f"أنت الان في محادثة في التليجرام وقام شخص ما بإرسال الرسالة التالية , أريدك أن تقوم بالرد عليها بإعتبار أنك منصة إسمها 'studyco' يجب أن تكون الرسالة قصيرة وتفي بالغرض قدر الإمكان {q}",
+    "prompt":system_prompt,
     "api_owner": 'AlharaqApi',
     "model":"mixtral-8x7b",
     "lang": "ar",
     "user_id": "dcb2d2ae-4039-4172-a347-7d324337eca8",
     "conversation_id": "c137a562-dfa9-4d8c-a4d0-acb77a5b3e86",
     "is_web_search": False,
-    "is_emojis": False
+    "is_emojis": False,
+  
 }
 
   url = "https://randai09078-randdaj.hf.space/api/chat/text"
@@ -66,16 +78,27 @@ async def handle_new_group_message(event):
     
     if event.is_group:
 
-        response = await get_message_ai(event.message)
-        if response:
-            sender_id = event.sender_id
-            await client.send_message(sender_id, event.message)
-            await client.send_message(sender_id, "السلام عليكم.")
-            await client.send_message(sender_id, response)
+        print(event.message.text)
+        if any(keyword in event.message.text for keyword in keyword_list):
+          if is_use_ai:
+              response = await get_message_ai(event.message.text)
+              if response:
+                  sender_id = event.sender_id
+                  await client.send_message(sender_id, event.message)
+                  await client.send_message(sender_id, "السلام عليكم.")
+                  await client.send_message(sender_id, response)
+          else:
+                  sender_id = event.sender_id
+                  await client.send_message(sender_id, event.message)
+                  await client.send_message(sender_id, "السلام عليكم.")
+                  await client.send_message(sender_id, default_replay[0])
+        else:
+            print("hhhhhhhhhhhh")
 
 
 async def main():
     await client.start()
     print("Client started.")
     await client.run_until_disconnected()
+# nest_asyncio.apply()
 asyncio.run(main())

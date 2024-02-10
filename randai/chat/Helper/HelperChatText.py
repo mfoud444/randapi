@@ -48,6 +48,8 @@ class HelperChatText:
             self.validate_req['image_uri'] = self.image_path_to_data_uri(self.validate_req['image_path'])
         if self.validate_req['is_group_telegram']:
             self.validate_req['is_stream'] = False
+            del self.validate_req['message'][0]
+            
         
             
         return self.validate_req
@@ -77,12 +79,13 @@ class HelperChatText:
         }
 
     def set_conversation(self):
+        is_group_telegram = self.user_req.get('is_group_telegram', False)
         conversation_id = self.user_req.get('conversation_id')
         if conversation_id is not None:
             existing_conversation = Conversation.objects.filter(id=conversation_id).first()
             if existing_conversation:
                 self.validate_req['conv'] = existing_conversation
-                if not self.is_image or not self.is_research:
+                if not self.is_image or not self.is_research or not is_group_telegram:
                     self.validate_req['message'] += self.build_message(conversation_id)
         else:
             self.validate_req['conversation_id']  =  str(uuid.uuid4())
