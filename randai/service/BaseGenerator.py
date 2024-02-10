@@ -17,6 +17,7 @@ errors_response = [
         "https://static.cloudflareinsights.com/beacon.min.js/",
     "mlc::llm::LLMChatModule::GetFunction",
     "<PHIND_BACKEND_ERROR>",
+    "mlc::llm::LLMChatModule"
 ]
 
 class BaseGenerator:
