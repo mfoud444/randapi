@@ -14,7 +14,7 @@ from .serializers import *
 from rest_framework import viewsets
 from .Helper.HelperChatText import HelperChatText
 from .Conversation import Conversation
-from service import ChatText, ImageGenerator, ResearchGen
+from service import ChatText, ImageGenerator, ResearchGen, TelegramAuto, TelegramInfo
 from django.http import StreamingHttpResponse, HttpResponse
 from util import TextTran, Settings, PandocConverter, WordTool
 from chat.ModelsAi import ModelAI, ModelAISerializer
@@ -418,3 +418,165 @@ def translate_text(request):
         return Response({"result": translation_result}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class GroupAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            object_tel = TelegramInfo()
+            groups = object_tel.get_all_groups()
+            return Response(groups, status=status.HTTP_200_OK)
+        except FileNotFoundError:
+            return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def post(self, request, *args, **kwargs): 
+        try:
+            object_tel = TelegramInfo()
+            new_group = request.data.get('group', '')
+            if new_group:
+                try:
+                    object_tel.add_group_to_file(new_group)
+                    return Response({"message": "New group added successfully"}, status=status.HTTP_201_CREATED)
+                except FileNotFoundError:
+                    return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+                except Exception as e:
+                    return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                raise ValueError("Group name not provided.")
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    def delete(self, request, *args, **kwargs):
+        try:
+            object_tel = TelegramInfo()
+            group_to_delete = request.data.get('group', '')
+            if group_to_delete:
+                try:
+                    object_tel.delete_group_from_file(group_to_delete)
+                    return Response({"message": "Group deleted successfully"}, status=status.HTTP_200_OK)
+                except FileNotFoundError:
+                    return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+                except Exception as e:
+                    return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response({"error": "Group name not provided."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+    def put(self, request, *args, **kwargs):
+        try:
+            object_tel = TelegramInfo()
+            group_to_update = request.data.get('group_to_update', '')
+            new_group = request.data.get('new_group', '')
+            if group_to_update and new_group:
+                try:
+                    object_tel.update_group_in_file(group_to_update, new_group)
+                    return Response({"message": "Group updated successfully"}, status=status.HTTP_200_OK)
+                except FileNotFoundError:
+                    return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+                except Exception as e:
+                    return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response({"error": "Group to update or new group not provided."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class KeyWordAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            object_tel = TelegramInfo()
+            keywords = object_tel.get_all_keyword()
+            return Response(keywords, status=status.HTTP_200_OK)
+        except FileNotFoundError:
+            return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def post(self, request, *args, **kwargs): 
+        try:
+            object_tel = TelegramInfo()
+            new_keyword = request.data.get('keyword', '')
+            print("new_keyword", new_keyword)
+            if new_keyword:
+                try:
+                        object_tel.add_keyword_to_file(new_keyword)
+                        return Response({"message": "New group added successfully"}, status=status.HTTP_201_CREATED)
+                except FileNotFoundError:
+                    return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+                except Exception as e:
+                    return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                raise
+        except Exception as e:
+            print(str(e))
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    def delete(self, request, *args, **kwargs):
+        try:
+            object_tel = TelegramInfo()
+            keyword_to_delete = request.data.get('keyword', '')
+            if keyword_to_delete:
+                try:
+                    object_tel.delete_keyword_from_file(keyword_to_delete)
+                    return Response({"message": "Keyword deleted successfully"}, status=status.HTTP_200_OK)
+                except FileNotFoundError:
+                    return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+                except Exception as e:
+                    return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response({"error": "Keyword not provided."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(str(e))
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+    def put(self, request, *args, **kwargs):
+        try:
+            object_tel = TelegramInfo()
+            keyword_to_update = request.data.get('keyword_to_update', '')
+            new_keyword = request.data.get('new_keyword', '')
+            if keyword_to_update and new_keyword:
+                try:
+                    object_tel.update_keyword_in_file(keyword_to_update, new_keyword)
+                    return Response({"message": "Keyword updated successfully"}, status=status.HTTP_200_OK)
+                except FileNotFoundError:
+                    return Response({"error": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+                except Exception as e:
+                    return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response({"error": "Keyword to update or new keyword not provided."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(str(e))
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from asgiref.sync import async_to_sync
+import asyncio
+class TelegramServiceView(APIView):
+    async def async_start_service(self, object_tel):
+        await object_tel.start_service()
+
+    async def process_request(self, request_data):
+        try:
+            serializer = ChatTextSerializer(data=request_data)
+            if serializer.is_valid():
+                valid_request = serializer.validated_data
+                helper_instance = HelperChatText(serializer.validated_data)
+                valid_request = helper_instance.build_valid_request()
+                object_tel = TelegramAuto(valid_request)
+                await self.async_start_service(object_tel)
+                return Response("Service started successfully", status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RequestAborted:
+            return Response(
+                {"detail": "Request aborted by the user"},
+                status=status.HTTP_499_CLIENT_CLOSED_REQUEST,
+            )
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def post(self, request, *args, **kwargs):
+        return asyncio.run(self.process_request(request.data))

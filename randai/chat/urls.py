@@ -37,5 +37,15 @@ urlpatterns = [
     path('delete-conversation/<uuid:user_id>/<str:type>/', delete_conversation,
          name='delete_conversation'),
     path('translate/', translate_text, name='translate-text'),
+    
+    
+    
+        path('tel/start', TelegramServiceView.as_view(), name='tel-start'),
+    
+    
+    
+        path('tel/groups', GroupAPIView.as_view(), name='groups'),
+          path('tel/keywords', KeyWordAPIView.as_view(), name='keywords'),
+    
 ]
 
