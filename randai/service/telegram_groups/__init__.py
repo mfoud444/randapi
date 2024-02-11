@@ -230,11 +230,18 @@ class TelegramAuto(BaseGenerator):
     async def start_service(self):
         print("start_service(self) start_service(self)")
         try:
+            phone = '+967714589027'
             client = TelegramClient(
                 "session_name",
                 22703059, 
                 "e61d8d8fb6f1aa3c47cefdfdcc59592d")
+            print(" TelegramClient TelegramClient TelegramClient")
             await client.start()
+            print(" client.start() client.start() client.start()")
+            if not client.is_user_authorized():
+                    client.send_code_request(phone)
+                    # signing in the client
+                    client.sign_in(phone, input('Enter the code: '))
             print("Client started.")
             await client.run_until_disconnected()
             print("start")
