@@ -1,8 +1,10 @@
 # !pip install telebot telethon
-from telethon import TelegramClient, events
+# from telethon import TelegramClient, events
 from telethon.tl.types import InputPeerChat
 from telethon.tl.functions.channels import JoinChannelRequest  
 from ..BaseGenerator import BaseGenerator
+from telethon.sync import TelegramClient ,  events
+from telethon import errors
 import asyncio
 from pathlib import Path
 import nest_asyncio
@@ -227,19 +229,24 @@ class TelegramAuto(BaseGenerator):
         
     async def start_service(self):
         print("start_service(self) start_service(self)")
-        # client = TelegramClient(
-        #     self.config.get("session_name"),
-        #     self.config.get("api_id"), 
-        #      self.config.get("api_hash"))
-        client = TelegramClient(
-            "session_name",
-            22703059, 
-             "e61d8d8fb6f1aa3c47cefdfdcc59592d")
-        # nest_asyncio.apply()
-        await client.start()
-        print("Client started.")
-        await client.run_until_disconnected()
-        print("start")
+        try:
+            client = TelegramClient(
+                "session_name",
+                22703059, 
+                "e61d8d8fb6f1aa3c47cefdfdcc59592d")
+            await client.start()
+            print("Client started.")
+            await client.run_until_disconnected()
+            print("start")
+        except errors.FloodWaitError as e:
+            print(f"Flood wait error: {e}")
+            # Handle flood wait error here
+        except errors.TimeoutError as e:
+            print(f"Timeout error: {e}")
+            # Handle timeout error here
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            # Handle any other exceptions here
         
     async def get_message_ai(self,q: str):
         system_prompt = f"""
