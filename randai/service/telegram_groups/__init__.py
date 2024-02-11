@@ -226,6 +226,7 @@ class TelegramAuto(BaseGenerator):
             return {}
         
     async def start_service(self):
+        print("start_service(self) start_service(self)")
         # client = TelegramClient(
         #     self.config.get("session_name"),
         #     self.config.get("api_id"), 
@@ -234,7 +235,7 @@ class TelegramAuto(BaseGenerator):
             "session_name",
             22703059, 
              "e61d8d8fb6f1aa3c47cefdfdcc59592d")
-        nest_asyncio.apply()
+        # nest_asyncio.apply()
         await client.start()
         print("Client started.")
         await client.run_until_disconnected()
