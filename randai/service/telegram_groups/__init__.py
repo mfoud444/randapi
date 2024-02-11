@@ -236,6 +236,8 @@ class TelegramAuto(BaseGenerator):
                 22703059, 
                 "e61d8d8fb6f1aa3c47cefdfdcc59592d")
             print(" TelegramClient TelegramClient TelegramClient")
+            await  client.connect()
+            print(" client.connect() client.connect() client.connect()")
             await client.start()
             print(" client.start() client.start() client.start()")
             if not client.is_user_authorized():
