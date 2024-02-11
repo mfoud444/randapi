@@ -238,9 +238,10 @@ class TelegramAuto(BaseGenerator):
             print(" TelegramClient TelegramClient TelegramClient")
             await  client.connect()
             print(" client.connect() client.connect() client.connect()")
-            await client.start()
+            # await client.start()
             print(" client.start() client.start() client.start()")
             if not client.is_user_authorized():
+                    print("client.is_user_authorized( client.is_user_authorized( client.is_user_authorized(")
                     client.send_code_request(phone)
                     # signing in the client
                     client.sign_in(phone, input('Enter the code: '))
