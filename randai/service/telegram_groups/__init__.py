@@ -242,9 +242,9 @@ class TelegramAuto(BaseGenerator):
             print(" client.start() client.start() client.start()")
             if not client.is_user_authorized():
                     print("client.is_user_authorized( client.is_user_authorized( client.is_user_authorized(")
-                    client.send_code_request(phone)
+                    await client.send_code_request(phone)
                     # signing in the client
-                    client.sign_in(phone, input('Enter the code: '))
+                    await client.sign_in(phone, input('Enter the code: '))
             print("Client started.")
             await client.run_until_disconnected()
             print("start")
