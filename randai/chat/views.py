@@ -584,14 +584,14 @@ class TelegramServiceView(APIView):
     def post(self, request, *args, **kwargs):
         return asyncio.run(self.process_request(request.data))
     
-class CodeVerificationView(APIView):
-    async def post(self, request, *args, **kwargs):
-        serializer = CodeSerializer(data=request.data)
-        if serializer.is_valid():
-            code = serializer.validated_data.get('code')
-            telegram_code = TelegramCode()
-            telegram_code.set_code(code)
-            # Wait until code is received
-            await telegram_code.wait_for_code()
-            return Response({"message": "Code received successfully"}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class CodeVerificationView(APIView):
+#     async def post(self, request, *args, **kwargs):
+#         serializer = CodeSerializer(data=request.data)
+#         if serializer.is_valid():
+#             code = serializer.validated_data.get('code')
+#             telegram_code = TelegramCode()
+#             telegram_code.set_code(code)
+#             # Wait until code is received
+#             await telegram_code.wait_for_code()
+#             return Response({"message": "Code received successfully"}, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

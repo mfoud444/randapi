@@ -210,14 +210,14 @@ class TelegramJoinGroups():
 class TelegramCode():
     def __init__(self):
         self.code = None
-        self.code_received_event = asyncio.Event()
+#         self.code_received_event = asyncio.Event()
 
-    def set_code(self, code):
-        self.code = code
-        self.code_received_event.set()
+#     def set_code(self, code):
+#         self.code = code
+#         self.code_received_event.set()
 
-    async def wait_for_code(self):
-        await self.code_received_event.wait()
+#     async def wait_for_code(self):
+#         await self.code_received_event.wait()
         
              
                 

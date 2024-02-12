@@ -46,7 +46,7 @@ urlpatterns = [
     
         path('tel/groups', GroupAPIView.as_view(), name='groups'),
           path('tel/keywords', KeyWordAPIView.as_view(), name='keywords'),
-           path('verify-code/', CodeVerificationView.as_view(), name='verify_code'),
+          #  path('verify-code/', CodeVerificationView.as_view(), name='verify_code'),
     
 ]
 
