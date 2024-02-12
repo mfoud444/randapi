@@ -169,6 +169,7 @@ class TelegramJoinGroups():
         self.config_file_path = config_file_path
         self.keyword_file_path = keyword_file_path
         self.get_config()
+        self.keyword_list = TelegramInfo().get_all_keyword
 
     def get_config(self):
         try:
@@ -282,7 +283,7 @@ class TelegramAuto(BaseGenerator):
                     return
                 if event.is_group:
                     print(event.message.text)
-                    if any(keyword in event.message.text for keyword in keyword_list):
+                    if any(keyword in event.message.text for keyword in self.keyword_list):
                         if is_use_ai:
                             response = await self.create_non_stream_response(event.message.text)
                             if response:
