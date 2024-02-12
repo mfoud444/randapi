@@ -245,8 +245,18 @@ class TelegramAuto(BaseGenerator):
         print("start_service(self) start_service(self)")
         try:
             phone = '+967714589027'
+            # async with TelegramClient('name', 22703059, "e61d8d8fb6f1aa3c47cefdfdcc59592d") as client:
+            #     await client.connect()
+            #     client.send_message('me', 'Hello, myself!')
+            #     print(client.download_profile_photo('me'))
+
+            #     @client.on(events.NewMessage(pattern='(?i).*Hello'))
+            #     async def handler(event):
+            #         await event.reply('Hey!')
+
+            #     client.run_until_disconnected()
             client = TelegramClient(
-                "session_name3",
+                "session_name5",
                 22703059, 
                 "e61d8d8fb6f1aa3c47cefdfdcc59592d")
             print(" TelegramClient TelegramClient TelegramClient")
@@ -265,6 +275,28 @@ class TelegramAuto(BaseGenerator):
                     await client.sign_in(phone, code_ver)
                     print("await client.sign_in(phone, code) await client.sign_in(phone, code) await client.sign_in(phone, code)")
             print("Client started.")
+            @client.on(events.NewMessage)
+            async def handle_new_group_message(event):
+                print(f"New message from group: {event.message}")
+                if event.sender_id == await client.get_me():
+                    return
+                if event.is_group:
+                    print(event.message.text)
+                    if any(keyword in event.message.text for keyword in keyword_list):
+                        if is_use_ai:
+                            response = await self.create_non_stream_response(event.message.text)
+                            if response:
+                                sender_id = event.sender_id
+                                await client.send_message(sender_id, event.message)
+                                await client.send_message(sender_id, "السلام عليكم.")
+                                await client.send_message(sender_id, response)
+                        else:
+                            sender_id = event.sender_id
+                            await client.send_message(sender_id, event.message)
+                            await client.send_message(sender_id, "السلام عليكم.")
+                            await client.send_message(sender_id, default_replay[0])
+                else:
+                    print("hhhhhh")
             await client.run_until_disconnected()
             print("start")
         except errors.FloodWaitError as e:
