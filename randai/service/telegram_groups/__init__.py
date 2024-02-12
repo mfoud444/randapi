@@ -17,7 +17,7 @@ groups_file_path = Path(__file__).resolve().parent / 'groups_list.json'
 config_file_path = Path(__file__).resolve().parent / 'config.json'
 keyword_file_path = Path(__file__).resolve().parent / 'keyword_list.json'
 # client = TelegramClient("session_name", "api_id", "api_hash")
-
+code_ver = None
 class TelegramInfo():
     def __init__(self):
         self.groups_file_path = groups_file_path
@@ -210,16 +210,17 @@ class TelegramJoinGroups():
 class TelegramCode():
     def __init__(self):
         self.code = None
-#         self.code_received_event = asyncio.Event()
+        self.code_received_event = asyncio.Event()
 
-#     def set_code(self, code):
-#         self.code = code
-#         self.code_received_event.set()
+    def set_code(self, code):
+        self.code = code
+        self.code_received_event.set()
 
-#     async def wait_for_code(self):
-#         await self.code_received_event.wait()
+    async def wait_for_code(self):
+        await self.code_received_event.wait()
         
-             
+async def set_and_return_code(telegram_code_instance):
+    return await telegram_code_instance.wait_for_code()  
                 
 class TelegramAuto(BaseGenerator):
     def __init__(self, req):
@@ -245,26 +246,24 @@ class TelegramAuto(BaseGenerator):
         try:
             phone = '+967714589027'
             client = TelegramClient(
-                "session_name1",
+                "session_name3",
                 22703059, 
                 "e61d8d8fb6f1aa3c47cefdfdcc59592d")
             print(" TelegramClient TelegramClient TelegramClient")
-            await  client.connect()
-            print(" client.connect() client.connect() client.connect()")
+            # nest_asyncio.apply()
+            await client.connect()
             # await client.start()
-            print(" client.start() client.start() client.start()")
+            print("client.connect()")
             if not await client.is_user_authorized():
                     print("client.is_user_authorized( client.is_user_authorized( client.is_user_authorized(")
                     await client.send_code_request(phone)
                     print("client.send_code_request(phone) client.send_code_request(phone) client.send_code_request(phone)")
-                    # # Wait for code from TelegramCode class
-                    # telegram_code = TelegramCode()
-                    # await telegram_code.wait_for_code()
-                    # print("await telegram_code.wait_for_code() await telegram_code.wait_for_code() await telegram_code.wait_for_code()")
-                    # # Get the code from TelegramCode class
-                    # code = telegram_code.code
-                    # signing in the client
-                    await client.sign_in(phone, code)
+                    while code_ver is None:
+                        await asyncio.sleep(1)      
+                    print("await telegram_code.wait_for_code() await telegram_code.wait_for_code() await telegram_code.wait_for_code()")
+                    print("await telegram_code.wait_for_code() ", code_ver)
+                    await client.sign_in(phone, code_ver)
+                    print("await client.sign_in(phone, code) await client.sign_in(phone, code) await client.sign_in(phone, code)")
             print("Client started.")
             await client.run_until_disconnected()
             print("start")

@@ -1,0 +1,120 @@
+class TelegramServiceView(APIView):
+    async def async_start_service(self, object_tel):
+        await object_tel.start_service()
+
+    async def process_request(self, request_data):
+        try:
+            print("111111111111111111111111111")
+            serializer = ChatTextSerializer(data=request_data)
+            if serializer.is_valid():
+                print("ggggggggggggggggggggggggggggggggggggggggg")
+                valid_request = serializer.validated_data
+                helper_instance = HelperChatText(serializer.validated_data)
+                valid_request = helper_instance.build_valid_request()
+                object_tel = TelegramAuto(valid_request)
+                print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+                await self.async_start_service(object_tel)
+                return Response("Service started successfully", status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except RequestAborted:
+            return Response(
+                {"detail": "Request aborted by the user"},
+                status=status.HTTP_499_CLIENT_CLOSED_REQUEST,
+            )
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def post(self, request, *args, **kwargs):
+        print("111111111111111111111111100")
+        return asyncio.run(self.process_request(request.data))
+    
+class CodeVerificationView(APIView):
+    @async_to_sync
+    async def post(self, request, *args, **kwargs):
+        serializer = CodeSerializer(data=request.data)
+        if serializer.is_valid():
+            code = serializer.validated_data.get('code')
+            telegram_code = TelegramCode()
+            telegram_code.set_code(code)
+            
+            # Wait until code is received
+            await telegram_code.wait_for_code()
+            return Response({"message": "Code received successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class TelegramCode():
+    def __init__(self):
+        self.code = None
+        self.code_received_event = asyncio.Event()
+
+    def set_code(self, code):
+        self.code = code
+        self.code_received_event.set()
+
+    async def wait_for_code(self):
+        await self.code_received_event.wait()
+        
+
+                
+class TelegramAuto(BaseGenerator):
+    def __init__(self, req):
+        super().__init__(req)
+        self.groups_file_path = groups_file_path
+        self.config_file_path = config_file_path
+        self.keyword_file_path = keyword_file_path
+        self.config = {}
+        self.get_config()
+
+    def get_config(self):
+        try:
+            with open(self.config_file_path, 'r') as file:
+                data = json.load(file)
+                self.config = data.get('myself', {})
+                print("config ", self.config.get("api_id") )
+        except FileNotFoundError:
+            print("File not found.")
+            return {}
+        
+    async def start_service(self):
+        print("start_service(self) start_service(self)")
+        try:
+            phone = '+967714589027'
+            client = TelegramClient(
+                "session_name1",
+                22703059, 
+                "e61d8d8fb6f1aa3c47cefdfdcc59592d")
+            print(" TelegramClient TelegramClient TelegramClient")
+            await  client.connect()
+            print(" client.connect() client.connect() client.connect()")
+            # await client.start()
+            print(" client.start() client.start() client.start()")
+            if not await client.is_user_authorized():
+                    print("client.is_user_authorized( client.is_user_authorized( client.is_user_authorized(")
+                    await client.send_code_request(phone)
+                    print("client.send_code_request(phone) client.send_code_request(phone) client.send_code_request(phone)")
+                    telegram_code = TelegramCode()
+                    await telegram_code.wait_for_code()
+                    print("await telegram_code.wait_for_code() await telegram_code.wait_for_code() await telegram_code.wait_for_code()")
+                    code = telegram_code.code
+                    print("await telegram_code.wait_for_code() ", code)
+                    await client.sign_in(phone, code)
+                    print("await client.sign_in(phone, code) await client.sign_in(phone, code) await client.sign_in(phone, code)")
+            print("Client started.")
+            await client.run_until_disconnected()
+            print("start")
+        except errors.FloodWaitError as e:
+            print(f"Flood wait error: {e}")
+            # Handle flood wait error here
+        except errors.TimeoutError as e:
+            print(f"Timeout error: {e}")
+            # Handle timeout error here
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            # Handle any other exceptions here
+        
+
+
+i am start get TelegramServiceView run start_service and when run util get await telegram_code.wait_for_code() in start_service now i want get code from CodeVerificationView but in start_service still wait not get code why and how to start_service get code from CodeVerificationView??  
