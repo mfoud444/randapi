@@ -257,12 +257,12 @@ class TelegramAuto(BaseGenerator):
                     print("client.is_user_authorized( client.is_user_authorized( client.is_user_authorized(")
                     await client.send_code_request(phone)
                     print("client.send_code_request(phone) client.send_code_request(phone) client.send_code_request(phone)")
-                    # Wait for code from TelegramCode class
-                    telegram_code = TelegramCode()
-                    await telegram_code.wait_for_code()
-                    print("await telegram_code.wait_for_code() await telegram_code.wait_for_code() await telegram_code.wait_for_code()")
-                    # Get the code from TelegramCode class
-                    code = telegram_code.code
+                    # # Wait for code from TelegramCode class
+                    # telegram_code = TelegramCode()
+                    # await telegram_code.wait_for_code()
+                    # print("await telegram_code.wait_for_code() await telegram_code.wait_for_code() await telegram_code.wait_for_code()")
+                    # # Get the code from TelegramCode class
+                    # code = telegram_code.code
                     # signing in the client
                     await client.sign_in(phone, code)
             print("Client started.")
