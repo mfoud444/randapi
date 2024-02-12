@@ -245,7 +245,7 @@ class TelegramAuto(BaseGenerator):
         try:
             phone = '+967714589027'
             client = TelegramClient(
-                "session_name",
+                "session_name1",
                 22703059, 
                 "e61d8d8fb6f1aa3c47cefdfdcc59592d")
             print(" TelegramClient TelegramClient TelegramClient")
