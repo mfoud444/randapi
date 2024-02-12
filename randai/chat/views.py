@@ -582,6 +582,7 @@ class TelegramServiceView(APIView):
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, *args, **kwargs):
+        print("111111111111111111111111100")
         return asyncio.run(self.process_request(request.data))
     
 # class CodeVerificationView(APIView):
