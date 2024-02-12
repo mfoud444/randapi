@@ -560,8 +560,10 @@ class TelegramServiceView(APIView):
 
     async def process_request(self, request_data):
         try:
+            print("111111111111111111111111111")
             serializer = ChatTextSerializer(data=request_data)
             if serializer.is_valid():
+                print("ggggggggggggggggggggggggggggggggggggggggg")
                 valid_request = serializer.validated_data
                 helper_instance = HelperChatText(serializer.validated_data)
                 valid_request = helper_instance.build_valid_request()
