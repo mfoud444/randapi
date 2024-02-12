@@ -206,7 +206,20 @@ class TelegramJoinGroups():
                 await asyncio.sleep(sleep_duration)
             except Exception as e:
                 print(f"Error joining group {link}: {str(e)}")
-                
+
+class TelegramCode():
+    def __init__(self):
+        self.code = None
+        self.code_received_event = asyncio.Event()
+
+    def set_code(self, code):
+        self.code = code
+        self.code_received_event.set()
+
+    async def wait_for_code(self):
+        await self.code_received_event.wait()
+        
+             
                 
 class TelegramAuto(BaseGenerator):
     def __init__(self, req):
@@ -243,8 +256,15 @@ class TelegramAuto(BaseGenerator):
             if not await client.is_user_authorized():
                     print("client.is_user_authorized( client.is_user_authorized( client.is_user_authorized(")
                     await client.send_code_request(phone)
+                    print("client.send_code_request(phone) client.send_code_request(phone) client.send_code_request(phone)")
+                    # Wait for code from TelegramCode class
+                    telegram_code = TelegramCode()
+                    await telegram_code.wait_for_code()
+                    print("await telegram_code.wait_for_code() await telegram_code.wait_for_code() await telegram_code.wait_for_code()")
+                    # Get the code from TelegramCode class
+                    code = telegram_code.code
                     # signing in the client
-                    await client.sign_in(phone, input('Enter the code: '))
+                    await client.sign_in(phone, code)
             print("Client started.")
             await client.run_until_disconnected()
             print("start")

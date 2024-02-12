@@ -89,3 +89,7 @@ class DocumentclassSerializer(serializers.Serializer):
 
 class ImagePathSerializer(serializers.Serializer):
     path = serializers.CharField(max_length=255)
+
+
+class CodeSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=6)
