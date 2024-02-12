@@ -566,6 +566,7 @@ class TelegramServiceView(APIView):
                 helper_instance = HelperChatText(serializer.validated_data)
                 valid_request = helper_instance.build_valid_request()
                 object_tel = TelegramAuto(valid_request)
+                print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
                 await self.async_start_service(object_tel)
                 return Response("Service started successfully", status=status.HTTP_200_OK)
             else:
