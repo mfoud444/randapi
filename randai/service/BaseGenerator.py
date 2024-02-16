@@ -63,9 +63,9 @@ class BaseGenerator:
             "messages": self.message,
             "stream": self.stream,
         }
-        if self.model == 'llama2-70b':
-            self.g4f = g4ff0204
-            params["provider"] = 'Llama2'
+        # if self.model == 'llama2-70b':
+        #     self.g4f = g4ff0204
+        #     params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
             # params["provider"] = 'Bing'
             # proxy = FreeProxy().get()

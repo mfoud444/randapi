@@ -40,13 +40,7 @@ urlpatterns = [
     
     
     
-        path('tel/start', TelegramServiceView.as_view(), name='tel-start'),
-    
-    
-    
-        path('tel/groups', GroupAPIView.as_view(), name='groups'),
-          path('tel/keywords', KeyWordAPIView.as_view(), name='keywords'),
-           path('tel/verify-code/', CodeVerificationView.as_view(), name='verify_code'),
+     
     
 ]
 
