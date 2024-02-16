@@ -89,8 +89,8 @@ class BaseGenerator:
         if self.model == 'mixtral-8x7b':
             self.g4f = g4ff0204
             # params["provider"] = 'huggingface'
-        if self.model  == 'gemini-pro':
-            self.g4f = g4ff0204
+        # if self.model  == 'gemini-pro':
+        #     self.g4f = g4ff0204
             # params["provider"] = 'FreeChatgpt'
             
         print("params", params)
