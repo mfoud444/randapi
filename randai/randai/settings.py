@@ -161,6 +161,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "https://rankchat-373eb.web.app",
     "https://randai.web.app",
+    
   
 ]
 
@@ -191,7 +192,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "randai09078-randdaj.hf.space",
     "randai.web.app",
-    "randai09078-randteg.hf.space"
+    "randai09078-randteg.hf.space",
+    "randai09078-randapi2.hf.space"
 ]
 
 REST_FRAMEWORK = {
