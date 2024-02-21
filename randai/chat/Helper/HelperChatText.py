@@ -29,6 +29,7 @@ class HelperChatText:
 
     def build_valid_request(self):
         self.initialize_valid_request()
+      
         
         
         self.set_model_information()
@@ -46,11 +47,7 @@ class HelperChatText:
             
         if self.validate_req['image_path']:
             self.validate_req['image_uri'] = self.image_path_to_data_uri(self.validate_req['image_path'])
-        if self.validate_req['is_group_telegram']:
-            self.validate_req['is_stream'] = False
-            del self.validate_req['message'][0]
-            print("=================================================================")
-            print("self.validate_req['message']:", self.validate_req['message'])
+
             
         
             
@@ -77,23 +74,15 @@ class HelperChatText:
             'image_uri':'',
             'type':'text',
             'is_emojis':self.user_req.get('is_emojis', True),
-            'is_group_telegram':self.user_req.get('is_group_telegram', False),
         }
 
     def set_conversation(self):
-        is_group_telegram = self.user_req.get('is_group_telegram', False)
-        print("===============================")
-        print("==========is_group_telegram============",   is_group_telegram)
         conversation_id = self.user_req.get('conversation_id')
         if conversation_id is not None:
             existing_conversation = Conversation.objects.filter(id=conversation_id).first()
             if existing_conversation:
                 self.validate_req['conv'] = existing_conversation
-                if is_group_telegram:
-                    print("========================================i am here is_group_telegram: ==========================================")
-                    pass
-                elif not self.is_image or not self.is_research:
-                    print("========================================i am here ==========================================")
+                if not self.is_image or not self.is_research:
                     self.validate_req['message'] += self.build_message(conversation_id)
         else:
             self.validate_req['conversation_id']  =  str(uuid.uuid4())
