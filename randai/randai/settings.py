@@ -152,18 +152,18 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3006",
-    "https://api.domain.com",
-    "http://localhost:8080",
-    "http://10.2.99.12:3006",
-    "http://127.0.0.1:8000",
-    "https://rankchat-373eb.web.app",
-    "https://randai.web.app",
+CORS_ALLOWED_ORIGINS = ["*"]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3006",
+#     "https://api.domain.com",
+#     "http://localhost:8080",
+#     "http://10.2.99.12:3006",
+#     "http://127.0.0.1:8000",
+#     "https://rankchat-373eb.web.app",
+#     "https://randai.web.app",
     
   
-]
+# ]
 
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -187,14 +187,15 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-ALLOWED_HOSTS = [
-    "10.2.99.12",
-    "127.0.0.1",
-    "randai09078-randdaj.hf.space",
-    "randai.web.app",
-    "randai09078-randteg.hf.space",
-    "randai09078-randapi2.hf.space"
-]
+# ALLOWED_HOSTS = [
+#     "10.2.99.12",
+#     "127.0.0.1",
+#     "randai09078-randdaj.hf.space",
+#     "randai.web.app",
+#     "randai09078-randteg.hf.space",
+#     "randai09078-randapi2.hf.space"
+# ]
+ALLOWED_HOSTS = ["*"]
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
