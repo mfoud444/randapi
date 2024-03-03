@@ -8,6 +8,8 @@ from chat.ModelsAi import ModelAI , ModelAISerializer
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from util import  Settings
+
+
 settings = Settings()
 class Conversation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -22,6 +24,7 @@ class Conversation(models.Model):
     is_like = models.BooleanField(null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
 
 
 

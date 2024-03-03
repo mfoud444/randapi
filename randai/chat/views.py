@@ -171,7 +171,8 @@ class ChatAPIView(APIView):
                     helper_instance = HelperChatText(serializer.validated_data)
                     valid_request = helper_instance.build_valid_request()
                     object_chat = ChatText(valid_request)
-                    print("valid_request", valid_request)
+                    
+                    
 
                     if valid_request.get("is_stream", False):
                         return StreamingHttpResponse(

@@ -52,7 +52,7 @@ class ResearchGen(BaseGenerator):
             attempts = 0
             prompt = prompt_template.format(topic=self.topic)
             params['messages'] += [{"role": "user", "content": prompt}]
-            print("========i am fuck ==========>",step )
+            
             step_result = ""
             while attempts < self.max_attempts:
                 try:
