@@ -182,7 +182,10 @@ class ResearchGen(BaseGenerator):
                     else:
                         raise  
         saved_end_data = save_data_in_db(self.valid_request, {'text': text_results , 'text_tran':tran_text_results})
-        saved_end_data["messageAi"]["text"] = ""
-        content = json.dumps(saved_end_data, separators=(',', ':'))
+        completion_data["messageUser"]["id"] = saved_end_data["messageUser"]["id"]
+        completion_data["messageAi"]["id"] = saved_end_data["messageAi"]["id"]
+        completion_data["messageAi"]["text"] = ""
+        # saved_end_data["messageAi"]["text"] = ""
+        content = json.dumps(completion_data, separators=(',', ':'))
         yield f'{content} \n'
 
