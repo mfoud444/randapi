@@ -12,6 +12,7 @@ from fp.fp import FreeProxy
 settings = Settings()
 from undetected_chromedriver import Chrome, ChromeOptions
 from .BaseGenerator import BaseGenerator
+from g4f import ChatCompletion
 
 class ChatText(BaseGenerator):
     def __init__(self, req):
@@ -54,7 +55,8 @@ class ChatText(BaseGenerator):
         while attempts < self.max_attempts:
             try:
                 params = self.prepare_params()
-                response = self.g4f.ChatCompletion.create(**params)
+                response = ChatCompletion.create(**params)
+                # response = self.g4f.ChatCompletion.create(**params)
                 if response is None:
                     raise ValueError("ChatCompletion.create returned None")
                 for chunk in response:

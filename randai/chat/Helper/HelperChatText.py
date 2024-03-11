@@ -46,7 +46,8 @@ class HelperChatText:
             self.validate_req['type'] = 'research'
             
         if self.validate_req['image_path']:
-            self.validate_req['image_uri'] = self.image_path_to_data_uri(self.validate_req['image_path'])
+            self.validate_req['image_url'] = self.image_path_to_data_uri(self.validate_req['image_path'])
+            # self.validate_req['image_uri'] = self.image_path_to_data_uri(self.validate_req['image_path'])
 
             
         
@@ -216,18 +217,28 @@ class HelperChatText:
     def image_path_to_data_uri(self, image_path):
         try:
             supabase_url_file = 'https://fvpmikdmeystnnxnloqe.supabase.co/storage/v1/object/public/chat-text/' + image_path
-            print(supabase_url_file)
             response = requests.get(supabase_url_file)
+
             if response.status_code == 200:
-                image_data = response.content
-                base64_encoded_image = base64.b64encode(image_data).decode("utf-8")
-                file_extension = image_path.split(".")[-1]
-                image_format = "jpeg" if file_extension.lower() == "jpg" else file_extension.lower()
-                data_uri = f"data:image/{image_format};base64,{base64_encoded_image}"
-                return data_uri
+                with open('image.jpg', 'wb') as f:
+                    f.write(response.content)
+                print('Image downloaded successfully')
+                return "/home/mohammed/Projects/backendrand/randapi/randai/image.jpg"
+                
             else:
-                print(f"Failed to fetch image. Status code: {response.status_code}")
-                return None
+                print('Failed to download image')
+        #     print(supabase_url_file)
+        #     response = requests.get(supabase_url_file)
+        #     if response.status_code == 200:
+        #         image_data = response.content
+        #         base64_encoded_image = base64.b64encode(image_data).decode("utf-8")
+        #         file_extension = image_path.split(".")[-1]
+        #         image_format = "jpeg" if file_extension.lower() == "jpg" else file_extension.lower()
+        #         data_uri = f"data:image/{image_format};base64,{base64_encoded_image}"
+        #         return data_uri
+        #     else:
+        #         print(f"Failed to fetch image. Status code: {response.status_code}")
+        #         return None
         except Exception as e:
             print(f"Error converting image to data URI: {e}")
             return None

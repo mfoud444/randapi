@@ -282,7 +282,6 @@ research_prompt = {
             19: "خُلِص النص، مأخوذًا في اعتبارك تأثيره على الأبحاث المستقبلية أو التطبيقات العملية.",
             20: "أتتناسب مع متطلبات عدد معين من الكلمات، مثل [{word_count}] كلمة.",
         },
-
         "conclusion": {
             1: "توليف النتائج من مصادر بحث مختلفة لاستخلاص استنتاجات ذات مغزى حول [{topic}].",
             2: "تأمل في أهمية نتائج الدراسة في التعامل مع الفجوة البحثية المحددة في الأدب.",
@@ -329,11 +328,12 @@ research_prompt = {
 }
 
 
-
 warning = {
-    "en":" Note: (Start your answering directly without welcome, warning, notes, or warning or word sure. I just want to answer the question, without any side talk)",
-    "ar":" ملاحظة: (إبدا بالإجابة مباشرة بدون ترحيب أو تحذير أو ملاحظات ، أو تنبيه، أريد الإجابة عن السؤال فقط ، بدون إي كلام جانبي)"
+    "en": " Note: (Start your answering directly without welcome, warning, notes, or warning or word sure. I just want to answer the question, without any side talk)",
+    "ar": " ملاحظة: (إبدا بالإجابة مباشرة بدون ترحيب أو تحذير أو ملاحظات ، أو تنبيه، أريد الإجابة عن السؤال فقط ، بدون إي كلام جانبي)",
 }
+
+
 def get_step_research(lang):
     step_research = {
         "introduction": research_prompt[lang]["introduction"].get(8, 8) + warning[lang],
@@ -341,21 +341,22 @@ def get_step_research(lang):
         "discussion": research_prompt[lang]["discussion"].get(10, 10) + warning[lang],
         "summary": research_prompt[lang]["summary"].get(5, 5) + warning[lang],
         "result": research_prompt[lang]["result"].get(5, 5) + warning[lang],
-        "conclusion": research_prompt[lang]["conclusion"].get(8, 8)+ warning[lang],
-         "future_work":research_prompt[lang]["future_work"].get(9, 9) + warning[lang], 
+        "conclusion": research_prompt[lang]["conclusion"].get(8, 8) + warning[lang],
+        "future_work": research_prompt[lang]["future_work"].get(9, 9) + warning[lang],
         "references": research_prompt[lang]["reference"].get(1, 1) + warning[lang],
     }
-    return step_research 
+    return step_research
 
-def get_title(key, lang= 'en'):
+
+def get_title(key, lang="en"):
     step_tran = {
         "en": {
             "introduction": "Introduction",
             "methodology": "Methodology",
             "discussion": "Discussion",
             "summary": "Summary",
-            "result":"Result",
-            "future_work":"Future Work",
+            "result": "Result",
+            "future_work": "Future Work",
             "conclusion": "Conclusion",
             "references": "References",
         },
@@ -364,17 +365,16 @@ def get_title(key, lang= 'en'):
             "methodology": "المنهجية",
             "discussion": "المناقشة",
             "summary": "الملخص",
-              "result":"النتائج",
-            "future_work":"الأعمال المستقبلية",
+            "result": "النتائج",
+            "future_work": "الأعمال المستقبلية",
             "conclusion": "الخاتمة",
             "references": "المراجع",
         },
     }
-    
+
     # Ensure the provided language is in lowercase
     lang = lang.lower()
-    
-    
+
     # If the language and key are present, return the translated title
     if lang in step_tran and key in step_tran[lang]:
         return step_tran[lang][key]

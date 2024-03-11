@@ -1,3 +1,4 @@
+import io
 import json
 import time
 import random
@@ -9,7 +10,7 @@ from util import TextTran, Settings
 from chat.database_utils import save_data_in_db
 from fp.fp import FreeProxy
 from undetected_chromedriver import Chrome, ChromeOptions
-from g4ff import g4ff0202, g4ff0203, g4ff0204
+# from g4ff import g4ff0202, g4ff0203, g4ff0204
 settings = Settings()
 # from g4f import set_cookies
 
@@ -22,7 +23,7 @@ errors_response = [
 
 class BaseGenerator:
     def __init__(self, req):
-        self.g4f = g4ff0204
+        self.g4f = g4f
         self.valid_request = req
         self.max_attempts = 5
         self.max_retries = 5
@@ -45,7 +46,7 @@ class BaseGenerator:
         self.is_tran_res = req.get('is_tran_res', False)
         self.lang = req.get('lang', '')
         self.is_web_search = req.get('is_web_search', False)
-        self.image = req.get('image_uri', None)
+        self.image =  req.get('image_url', None)# #req.get('image_uri', None)
         self.conversation_id = req.get('conversation_id', str(uuid.uuid4()))
 
     def gen_text(self):
@@ -67,7 +68,9 @@ class BaseGenerator:
         #     self.g4f = g4ff0204
         #     params["provider"] = 'Llama2'
         if self.model == 'gpt-4':
+            self.g4f = g4f
             params["provider"] = 'Bing'
+            params['web_search'] = False
             # proxy = FreeProxy().get()
             # print("proxy", proxy)
             # params["proxy"] = proxy
@@ -84,10 +87,10 @@ class BaseGenerator:
                 params["web_search"] = self.is_web_search
                 
         if self.image:
-            params["image"] = self.image
+            params["image"] =  open(self.image, "rb")
             
-        if self.model == 'mixtral-8x7b':
-            self.g4f = g4ff0204
+        # if self.model == 'mixtral-8x7b':
+            # self.g4f = g4ff0204
             # params["provider"] = 'huggingface'
         # if self.model  == 'gemini-pro':
         #     self.g4f = g4ff0204
