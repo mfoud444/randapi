@@ -21,7 +21,6 @@ router.register(r'prompt', PromptAPIViewSet)
 router.register(r'conversation', ConversationAPIViewSet)
 router.register(r'message-user', MessageUserAPIViewSet)
 router.register(r'message-ai', MessageAIAPIViewSet)
-# router.register(r'update-message-ai', MessageAISet)
 
 router.register(r'messages', ListMessagesAPIViewSet)
 router.register(r'images', ListImageAIAPIViewSet)
