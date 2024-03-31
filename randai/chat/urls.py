@@ -9,21 +9,21 @@ from .ModelsAi import  ListModelAPIViewSet
 from .Conversation import delete_conversation
 
 router = routers.DefaultRouter()
-router.register(r'api-option', ApiOptionViewSet)
-router.register(r'api-keys', ApiKeyViewSet)
-router.register(r'api-owner', ApiOwnerViewSet)
-router.register(r'lang', LanguageAPIViewSet)
-router.register(r'company-ai', CompanyAIAPIViewSet)
-router.register(r'provider', ProviderAPIViewSet)
-router.register(r'model', ListModelAPIViewSet)
-router.register(r'character', CharacterAPIViewSet)
-router.register(r'prompt', PromptAPIViewSet)
-router.register(r'conversation', ConversationAPIViewSet)
-router.register(r'message-user', MessageUserAPIViewSet)
-router.register(r'message-ai', MessageAIAPIViewSet)
-
-router.register(r'messages', ListMessagesAPIViewSet)
-router.register(r'images', ListImageAIAPIViewSet)
+router.register(r'api-option', ApiOptionViewSet, basename='api-option')
+router.register(r'api-keys', ApiKeyViewSet, basename='api-keys')
+router.register(r'api-owner', ApiOwnerViewSet, basename='api-owner')
+router.register(r'lang', LanguageAPIViewSet, basename='lang')
+router.register(r'company-ai', CompanyAIAPIViewSet, basename='company-ai')
+router.register(r'provider', ProviderAPIViewSet, basename='provider')
+router.register(r'model', ListModelAPIViewSet, basename='model')
+router.register(r'character', CharacterAPIViewSet, basename='character')
+router.register(r'prompt', PromptAPIViewSet, basename='prompt')
+router.register(r'conversation', ConversationAPIViewSet, basename='conversation')
+router.register(r'message-user', MessageUserAPIViewSet, basename='message-user')
+router.register(r'message-ai', MessageAIAPIViewSet, basename='message-ai')
+router.register(r'update-message-ai', MessageAISet, basename='update-message-ai')
+router.register(r'messages', ListMessagesAPIViewSet, basename='messages')
+router.register(r'images', ListImageAIAPIViewSet, basename='images')
 urlpatterns = [
     path('', include(router.urls)),
     path('chat/text', ChatTextAPIView.as_view(), name='chat-text'),
