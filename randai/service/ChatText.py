@@ -35,12 +35,18 @@ class ChatText(BaseGenerator):
                     retries += 1
 
             except (RuntimeError, Exception) as e:
-                print(f"Error during generate:")
-                if retries < self.max_retries - 1:
-                    print(f"Retrying... Attempt {retries + 2}/{self.max_retries}")
-                    retries += 1
+                if "FinishReason" in str(e):
+                    print("Encountered 'FinishReason' error. Continuing normal process.")
+                    saved_end_data = save_data_in_db(self.valid_request, res)
+                    saved_end_data["messageAi"]["text"] = ""
+                    content = json.dumps(saved_end_data, separators=(',', ':'))
+                    yield f'{content} \n'
+                    break
                 else:
-                    raise
+                    print(f"Error {e}")
+                    print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
+                    attempts += 1
+                    continue
         
         return {'text': response}
 
@@ -66,7 +72,7 @@ class ChatText(BaseGenerator):
                     res["text"] += chunk
                     completion_data["messageAi"]["text"] = chunk
                     content = json.dumps(completion_data, separators=(',', ':'))
-                    print(completion_data)
+                    # print(completion_data)
                     yield f'{content} \n'
 
                 saved_end_data = save_data_in_db(self.valid_request, res)
@@ -75,10 +81,18 @@ class ChatText(BaseGenerator):
                 yield f'{content} \n'
                 break
             except (RuntimeError, Exception) as e:
-                print(f"Error {e}")
-                print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
-                attempts += 1
-                continue
+                if "FinishReason" in str(e):
+                    print("Encountered 'FinishReason' error. Continuing normal process.")
+                    saved_end_data = save_data_in_db(self.valid_request, res)
+                    saved_end_data["messageAi"]["text"] = ""
+                    content = json.dumps(saved_end_data, separators=(',', ':'))
+                    yield f'{content} \n'
+                    break
+                else:
+                    print(f"Error {e}")
+                    print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
+                    attempts += 1
+                    continue
             finally:
                 if self.webdriver:
                     self.webdriver.quit() 
