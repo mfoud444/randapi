@@ -18,6 +18,10 @@ class ChatText(BaseGenerator):
     def __init__(self, req):
         super().__init__(req)
         
+class ChatText(BaseGenerator):
+    def __init__(self, req):
+        super().__init__(req)
+        
     def create_non_stream_response(self):
         retries = 0
         while retries < self.max_retries:
@@ -28,25 +32,25 @@ class ChatText(BaseGenerator):
                     if any(error_response in response for error_response in self.errors_response):
                         retries += 1
                     else:
+                        # Find the index of '<g4f.providers.types.FinishReason'
+                        index = response.find('<g4f.providers.types.FinishReason')
+                        if index != -1:
+                            # Remove everything from the index of '<g4f.providers.types.FinishReason' to the end
+                            response = response[:index]
                         break
-                    
                 else:
                     print("Received None response. Retrying...")
                     retries += 1
 
             except (RuntimeError, Exception) as e:
-                # if "FinishReason" in str(e):
-                #     print("Encountered 'FinishReason' error. Continuing normal process.")
-                #     saved_end_data = save_data_in_db(self.valid_request, res)
-                #     saved_end_data["messageAi"]["text"] = ""
-                #     content = json.dumps(saved_end_data, separators=(',', ':'))
-                #     yield f'{content} \n'
-                #     break
-                # else:
+                if "FinishReason" in str(e):
+                    print("Encountered 'FinishReason' error. Continuing normal process.")
+                else:
                     print(f"Error {e}")
                     print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
                     attempts += 1
                     continue
+
         
         return {'text': response}
 
