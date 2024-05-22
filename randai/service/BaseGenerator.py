@@ -51,6 +51,7 @@ class BaseGenerator:
 
     def gen_text(self):
         if self.stream:
+            
             res = self.create_stream_response()
         else:
             res = self.create_non_stream_response()

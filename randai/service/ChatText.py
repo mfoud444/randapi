@@ -35,14 +35,14 @@ class ChatText(BaseGenerator):
                     retries += 1
 
             except (RuntimeError, Exception) as e:
-                if "FinishReason" in str(e):
-                    print("Encountered 'FinishReason' error. Continuing normal process.")
-                    saved_end_data = save_data_in_db(self.valid_request, res)
-                    saved_end_data["messageAi"]["text"] = ""
-                    content = json.dumps(saved_end_data, separators=(',', ':'))
-                    yield f'{content} \n'
-                    break
-                else:
+                # if "FinishReason" in str(e):
+                #     print("Encountered 'FinishReason' error. Continuing normal process.")
+                #     saved_end_data = save_data_in_db(self.valid_request, res)
+                #     saved_end_data["messageAi"]["text"] = ""
+                #     content = json.dumps(saved_end_data, separators=(',', ':'))
+                #     yield f'{content} \n'
+                #     break
+                # else:
                     print(f"Error {e}")
                     print(f"Error during generate (Attempt {attempts + 1}/{self.max_attempts})")
                     attempts += 1
